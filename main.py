@@ -24,7 +24,9 @@ def main():
 
     for ground_truth in ground_truth_list:
         points = sco.loadmat(ground_truth)
-        print(points)
+        arr = points['image_info'][0][0][0][0][0]
+        print(arr)
+
         
 
 if __name__ == '__main__':
