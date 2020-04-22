@@ -28,16 +28,16 @@ def main():
     # one block at a time (leave the other 3 blocks commented out) because it will take about 20-30 minutes/block...
 
     output_name = "ShanghaiTech_PartA_Train/"
-    Parallel(n_jobs=4)(delayed(density_wrapper)(i) for i in a_train)
+    Parallel(n_jobs=4)(delayed(density_wrapper)(i, output_name) for i in a_train)
 
     # output_name = "ShanghaiTech_PartA_Test/"
-    # Parallel(n_jobs=4)(delayed(density_wrapper)(i) for i in a_test)
+    # Parallel(n_jobs=4)(delayed(density_wrapper)(i, output_name) for i in a_test)
 
     # output_name = "ShanghaiTech_PartB_Train/"
     # Parallel(n_jobs=4)(delayed(density_wrapper)(i, output_name) for i in b_train)
 
     # output_name = "ShanghaiTech_PartB_Test/"
-    # Parallel(n_jobs=4)(delayed(density_wrapper)(i) for i in b_test)
+    # Parallel(n_jobs=4)(delayed(density_wrapper)(i, output_name) for i in b_test)
 
 
 

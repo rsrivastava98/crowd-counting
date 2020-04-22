@@ -15,7 +15,6 @@ from sklearn.neighbors import NearestNeighbors
 import matplotlib.pyplot as plt
 
 __DATASET_ROOT = "data/shanghaitech_h5_empty/ShanghaiTech/"
-# __OUTPUT_NAME = "ShanghaiTech_PartB_Test/"
 
 def generate_shanghaitech_path(root):
     # now generate the ShanghaiA's ground truth
