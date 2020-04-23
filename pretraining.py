@@ -12,6 +12,8 @@ class R1Model(tf.keras.Model):
             learning_rate=hp.learning_rate,
             momentum=hp.momentum)
 
+        self.checkpoint_path = "./r1_checkpoints/"
+
         self.r1 = [
             # Block 1
             Conv2D(16, 9, 1, padding="same", name="block1_conv1"),
@@ -48,6 +50,8 @@ class R2Model(tf.keras.Model):
         self.optimizer = tf.keras.optimizers.RMSprop(
             learning_rate=hp.learning_rate,
             momentum=hp.momentum)
+
+        self.checkpoint_path = "./r2_checkpoints/"
 
         self.r2 = [
             # Block 1
@@ -86,6 +90,8 @@ class R3Model(tf.keras.Model):
             learning_rate=hp.learning_rate,
             momentum=hp.momentum)
 
+        self.checkpoint_path = "./r3_checkpoints/"
+
         self.r3 = [
             # Block 1
             Conv2D(24, 5, 1, padding="same", name="block1_conv1"),
@@ -116,13 +122,15 @@ class R3Model(tf.keras.Model):
 
 
 class SwitchModel(tf.keras.Model):
-    def __init__(self):
+    def __init__(self, ):
         super(SwitchModel, self).__init__()
 
         # Optimizer
         self.optimizer = tf.keras.optimizers.RMSprop(
             learning_rate=hp.learning_rate,
             momentum=hp.momentum)
+
+        self.checkpoint_path = "./switch_checkpoints/"
 
         self.switch = [
             # Block 1
@@ -178,3 +186,57 @@ class SwitchModel(tf.keras.Model):
 
         return tf.keras.losses.categorical_crossentropy(
             labels, predictions, from_logits=False)
+
+#training function 
+def train(model, datasets, checkpoint_path):
+    """ Training routine. """
+
+    # Keras callbacks for training
+    callback_list = [
+        tf.keras.callbacks.ModelCheckpoint(
+            filepath=checkpoint_path + \
+                    "weights.e{epoch:02d}-" + \
+                    "acc{val_categorical_accuracy:.4f}.h5",
+            monitor='val_categorical_accuracy',
+            save_best_only=True,
+            save_weights_only=True),
+        tf.keras.callbacks.TensorBoard(
+            update_freq='batch',
+            profile_batch=0),
+        ImageLabelingLogger(datasets)
+    ]
+
+    # Include confusion logger in callbacks if flag set
+    # if ARGS.confusion:
+    #     callback_list.append(ConfusionMatrixLogger(datasets))
+
+    # Begin training
+    model.fit(
+        x=datasets.train_data, #update once we have data from preprocessing 
+        validation_data=datasets.test_data,
+        epochs=hp.num_epochs,
+        batch_size=None,
+        callbacks=callback_list,
+    )
+
+def main():
+
+    datasets = None #assign datasets from preprocess
+    networks = [R1Model(), R2Model(), R3Model(), SwitchModel()]
+
+    #Model pretrain
+    for model in networks:
+        model(tf.keras.Input(shape=(img_size, img_size, 3)))
+        checkpoint_path = model.checkpoint_path
+        model.summary()
+
+        # Compile model graph
+        model.compile(
+            optimizer=model.optimizer,
+            loss=model.loss_fn,
+            metrics=["categorical_accuracy"])
+
+        train(model, datasets, checkpoint_path)
+
+    
+
