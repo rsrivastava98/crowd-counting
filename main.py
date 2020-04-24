@@ -22,8 +22,8 @@ def main():
     # output_name = "ShanghaiTech_PartA_Train/"
     # Parallel(n_jobs=4)(delayed(preprocessing.density_wrapper)(i, output_name) for i in a_train)
 
-    # output_name = "ShanghaiTech_PartA_Test/"
-    # Parallel(n_jobs=4)(delayed(preprocessing.density_wrapper)(i, output_name) for i in a_test)
+    output_name = "ShanghaiTech_PartA_Test/"
+    Parallel(n_jobs=4)(delayed(preprocessing.density_wrapper)(i, output_name) for i in a_test)
 
     # output_name = "ShanghaiTech_PartB_Train/"
     # Parallel(n_jobs=4)(delayed(preprocessing.density_wrapper)(i, output_name) for i in b_train)
@@ -35,6 +35,8 @@ def main():
     images = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/test_data/images")
 
     pretraining.main((images, densities))
+
+    pretraining.main(np.array(images, densities))
 
 
 

@@ -237,6 +237,7 @@ def main(datasets):
             metrics=["categorical_accuracy"])
 
         train(model, datasets, checkpoint_path)
+    print("done")
 
 if __name__ == '__main__':
     main()  
