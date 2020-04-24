@@ -219,9 +219,9 @@ def train(model, datasets, checkpoint_path):
         callbacks=callback_list,
     )
 
-def main():
+def main(datasets):
 
-    datasets = None #assign datasets from preprocess
+    # datasets = None #assign datasets from preprocess
     networks = [R1Model(), R2Model(), R3Model(), SwitchModel()]
 
     #Model pretrain
@@ -238,5 +238,6 @@ def main():
 
         train(model, datasets, checkpoint_path)
 
-    
+if __name__ == '__main__':
+    main()  
 

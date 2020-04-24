@@ -14,7 +14,13 @@ import sys
 from sklearn.neighbors import NearestNeighbors
 import matplotlib.pyplot as plt
 
+from matplotlib.image import imread
+from skimage import color
+
+
 __DATASET_ROOT = "data/shanghaitech_h5_empty/ShanghaiTech/"
+
+
 
 def generate_shanghaitech_path(root):
     # now generate the ShanghaiA's ground truth
@@ -46,6 +52,7 @@ def generate_shanghaitech_path(root):
                 img_paths_b_test.append(os.path.join(roots, name))
 
     return img_paths_a_train, img_paths_a_test, img_paths_b_train, img_paths_b_test
+
 
 
 def gaussian_filter_density(gt):
@@ -91,3 +98,62 @@ def generate_density_map(img, gt, img_path, h5_path):
     sys.stdout.flush()
     with h5py.File(output_path, 'w') as hf:
         hf['density'] = gt_loc
+
+def density_wrapper(img_path, output_path):
+    imgfile = image.load_img(img_path)
+    mat_file = img_path.replace('.jpg', '.mat').replace('images', 'ground-truth').replace('IMG_', 'GT_IMG_')
+    img = image.img_to_array(imgfile)
+    points = loadmat(mat_file)
+    arr = points['image_info'][0][0][0][0][0]
+    print(img_path, mat_file)
+    generate_density_map(img, arr, img_path, output_path)
+
+def density_patches(data_path):
+    path, dirs, files = next(os.walk(data_path))
+    file_count = len(files)
+
+    filenames = [img for img in glob.glob(data_path + "/*.h5")]
+
+    filenames.sort() 
+    densities = []
+    for img in filenames:
+        hf = h5py.File(img, 'r')
+        data = hf.get('density')[()]
+
+        shape = data.shape
+        px = int(shape[0] / 3)
+        py = int(shape[1] / 3)
+        
+        for i in range(3):
+            for j in range(3):
+                n = data [px*i:px*(i+1), py*j:py*(j+1)]
+                densities.append(n)
+
+    densities = np.array(densities)
+    return densities
+
+def image_patches(data_path):
+    path, dirs, files = next(os.walk(data_path))
+    file_count = len(files)
+
+    filenames = [img for img in glob.glob(data_path + "/*.jpg")]
+
+    filenames.sort()
+
+    images = []
+    for img in filenames:
+
+        data = color.rgb2gray(io.imread(img))
+        
+        shape = data.shape
+        px = int(shape[0] / 3)
+        py = int(shape[1] / 3)
+        
+        for i in range(3):
+            for j in range(3):
+                n = data [px*i:px*(i+1), py*j:py*(j+1)-1]
+                images.append(n)
+
+        images = np.array(images)
+
+    return images
