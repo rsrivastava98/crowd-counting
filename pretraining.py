@@ -159,7 +159,7 @@ class SwitchModel(tf.keras.Model):
             MaxPool2D(2, name="block5_pool")
         ]
 
-        for layer in self.vgg16:
+        for layer in self.switch:
             layer.trainable = False
         # TODO: Write a classification head for our 15-scene classification task.
         #       Hint: The layers Flatten and Dense are essential here.
@@ -230,7 +230,7 @@ def main():
 
     #Model pretrain
     for model in networks:
-        model(tf.keras.Input(shape=(img_size, img_size, 3)))
+        model(tf.keras.Input()
         checkpoint_path = model.checkpoint_path
         model.summary()
 
