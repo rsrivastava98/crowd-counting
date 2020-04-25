@@ -218,7 +218,7 @@ def train(model, datasets, checkpoint_path):
         callbacks=callback_list,
     )
 
-def main(datasets):
+def main():
 
     # datasets = None #assign datasets from preprocess
 
