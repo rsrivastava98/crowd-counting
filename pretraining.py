@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 import preprocessing
+import hyperparameters as hp
 from tensorflow.keras.layers import Conv2D, MaxPool2D, Flatten, Dense, GlobalAveragePooling3D
 
 class R1Model(tf.keras.Model):
