@@ -230,7 +230,7 @@ def main():
 
     #Model pretrain
     for model in networks:
-        model(tf.keras.Input()
+        model(tf.keras.Input())
         checkpoint_path = model.checkpoint_path
         model.summary()
 
