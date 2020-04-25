@@ -229,8 +229,8 @@ def main():
     networks = [R1Model(), R2Model(), R3Model(), SwitchModel()]
 
     datasets = {}
-    datasets.train_data = images[:300]
-    datasets.test_data = images[300:]
+    datasets["train_data"] = images[:300] #temporary fix
+    datasets["test_data"] = images[300:]
 
     #Model pretrain
     for model in networks:
