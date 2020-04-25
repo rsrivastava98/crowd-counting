@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 import os
 from skimage import io
 from tensorflow.keras.preprocessing import image
