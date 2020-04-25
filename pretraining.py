@@ -41,7 +41,7 @@ class R1Model(tf.keras.Model):
         """ Loss function for model. """
 
         return tf.keras.losses.MeanSquaredError(
-            labels, predictions, from_logits=False)
+            labels, predictions)
 
 class R2Model(tf.keras.Model):
     def __init__(self):
