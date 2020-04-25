@@ -31,8 +31,8 @@ def main():
     # output_name = "ShanghaiTech_PartB_Test/"
     # Parallel(n_jobs=4)(delayed(preprocessing.density_wrapper)(i, output_name) for i in b_test)
 
-    densities = preprocessing.density_patches("ShanghaiTech_PartA_Test/part_A/test_data/ground-truth-h5")
-    images = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/test_data/images")
+    #densities = preprocessing.density_patches("ShanghaiTech_PartA_Test/part_A/test_data/ground-truth-h5")
+    #images = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/test_data/images")
 
     pretraining.main((images, densities))
 

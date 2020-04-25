@@ -153,5 +153,5 @@ def image_patches(data_path):
                 n = data [px*i:px*(i+1), py*j:py*(j+1)-1]
                 images.append(n)
 
-        images = np.array(images)
+    images = np.array(images)
     return images

@@ -1,6 +1,5 @@
 import numpy as np
 import tensorflow as tf
-import hyperparameters as hp
 from tensorflow.keras.layers import Conv2D, MaxPool2D, Flatten, Dense, GlobalAveragePooling3D
 
 class R1Model(tf.keras.Model):
@@ -222,6 +221,9 @@ def train(model, datasets, checkpoint_path):
 def main(datasets):
 
     # datasets = None #assign datasets from preprocess
+
+    densities = preprocessing.density_patches("ShanghaiTech_PartA_Test/part_A/test_data/ground-truth-h5")
+    images = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/test_data/images")
     networks = [R1Model(), R2Model(), R3Model(), SwitchModel()]
 
     #Model pretrain
