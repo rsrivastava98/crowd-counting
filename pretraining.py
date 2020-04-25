@@ -228,9 +228,13 @@ def main():
     images = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/test_data/images")
     networks = [R1Model(), R2Model(), R3Model(), SwitchModel()]
 
+    datasets = {}
+    datasets.train_data = images[:300]
+    datasets.test_data = images[300:]
+
     #Model pretrain
     for model in networks:
-        model(tf.keras.Input())
+        model(tf.keras.Input(shape = (300, 300, 3)))
         checkpoint_path = model.checkpoint_path
         model.summary()
 
