@@ -4,6 +4,7 @@ import preprocessing
 import hyperparameters as hp
 from tensorflow.keras.layers import Conv2D, MaxPool2D, Flatten, Dense, GlobalAveragePooling3D
 
+
 class R1Model(tf.keras.Model):
     def __init__(self):
         super(R1Model, self).__init__()
@@ -80,7 +81,7 @@ class R2Model(tf.keras.Model):
         """ Loss function for model. """
 
         return tf.keras.losses.MeanSquaredError(
-            labels, predictions, from_logits=False)
+            labels, predictions)
 
 class R3Model(tf.keras.Model):
     def __init__(self):
@@ -119,7 +120,7 @@ class R3Model(tf.keras.Model):
         """ Loss function for model. """
 
         return tf.keras.losses.MeanSquaredError(
-            labels, predictions, from_logits=False)
+            labels, predictions)
 
 
 class SwitchModel(tf.keras.Model):
@@ -189,36 +190,48 @@ class SwitchModel(tf.keras.Model):
             labels, predictions, from_logits=False)
 
 #training function 
-def train(model, datasets, checkpoint_path):
-    """ Training routine. """
+# def train(model, datasets, checkpoint_path):
+#     """ Training routine. """
 
-    # Keras callbacks for training
-    callback_list = [
-        tf.keras.callbacks.ModelCheckpoint(
-            filepath=checkpoint_path + \
-                    "weights.e{epoch:02d}-" + \
-                    "acc{val_categorical_accuracy:.4f}.h5",
-            monitor='val_categorical_accuracy',
-            save_best_only=True,
-            save_weights_only=True),
-        tf.keras.callbacks.TensorBoard(
-            update_freq='batch',
-            profile_batch=0),
-        ImageLabelingLogger(datasets)
-    ]
+#     # Keras callbacks for training
+#     callback_list = [
+#         tf.keras.callbacks.ModelCheckpoint(
+#             filepath=checkpoint_path + \
+#                     "weights.e{epoch:02d}-" + \
+#                     "acc{val_categorical_accuracy:.4f}.h5",
+#             monitor='val_categorical_accuracy',
+#             save_best_only=True,
+#             save_weights_only=True),
+#         tf.keras.callbacks.TensorBoard(
+#             update_freq='batch',
+#             profile_batch=0),
+#         # ImageLabelingLogger(datasets)
+#     ]
 
-    # Include confusion logger in callbacks if flag set
-    # if ARGS.confusion:
-    #     callback_list.append(ConfusionMatrixLogger(datasets))
+#     # Include confusion logger in callbacks if flag set
+#     # if ARGS.confusion:
+#     #     callback_list.append(ConfusionMatrixLogger(datasets))
 
-    # Begin training
-    model.fit(
-        x=datasets.train_data, #update once we have data from preprocessing 
-        validation_data=datasets.test_data,
-        epochs=hp.num_epochs,
-        batch_size=None,
-        callbacks=callback_list,
+#     # Begin training
+#     model.fit(
+#         x=datasets.train_data, #update once we have data from preprocessing 
+#         y = datasets.density_train,
+#         validation_data=datasets.test_data,
+#         epochs=hp.num_epochs,
+#         batch_size=None,
+#         callbacks=callback_list,
+#     )
+
+def test(model, datasets):
+    """ Testing routine. """
+
+    # Run model on test set
+    model.evaluate(
+        x=test_data,
+        y=datasets.density_test
+        verbose=1,
     )
+
 
 def main():
 
@@ -226,15 +239,19 @@ def main():
 
     densities = preprocessing.density_patches("ShanghaiTech_PartA_Test/part_A/test_data/ground-truth-h5")
     images = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/test_data/images")
-    networks = [R1Model(), R2Model(), R3Model(), SwitchModel()]
+    networks = [R1Model(), R2Model(), R3Model()]
 
     datasets = {}
     datasets["train_data"] = images[:300] #temporary fix
     datasets["test_data"] = images[300:]
 
+    datasets["density_train"] = densities[:300]
+    datasets["density_test"] = densities[300:]
+
     #Model pretrain
     for model in networks:
-        model(tf.keras.Input(shape = (300, 300, 3)))
+        # model(tf.keras.Input(shape = (300, 300, 3)))
+        model()
         checkpoint_path = model.checkpoint_path
         model.summary()
 
@@ -244,7 +261,29 @@ def main():
             loss=model.loss_fn,
             metrics=["categorical_accuracy"])
 
-        train(model, datasets, checkpoint_path)
+        #training
+        callback_list = [
+            tf.keras.callbacks.ModelCheckpoint(
+                filepath=checkpoint_path + \
+                        "weights.e{epoch:02d}-" + \
+                        "acc{val_categorical_accuracy:.4f}.h5",
+                monitor='val_categorical_accuracy',
+                save_best_only=True,
+                save_weights_only=True),
+            tf.keras.callbacks.TensorBoard(
+                update_freq='batch',
+                profile_batch=0),
+            # ImageLabelingLogger(datasets)
+        ]
+        model.fit(
+            x=datasets.train_data, #update once we have data from preprocessing 
+            y = datasets.density_train,
+            validation_data=datasets.test_data,
+            epochs=hp.num_epochs,
+            batch_size=None,
+            callbacks=callback_list,
+        )
+
     print("done")
 
 if __name__ == '__main__':
