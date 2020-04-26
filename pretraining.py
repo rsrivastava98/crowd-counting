@@ -241,12 +241,12 @@ def main():
     images = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/test_data/images")
     networks = [R1Model(), R2Model(), R3Model()]
 
-    datasets = {}
-    datasets["train_data"] = images[:300] #temporary fix
-    datasets["test_data"] = images[300:]
+    #datasets = {}
+    train_data = images[:300] #temporary fix
+    test_data = images[300:]
 
-    datasets["density_train"] = densities[:300]
-    datasets["density_test"] = densities[300:]
+    density_train = densities[:300]
+    density_test = densities[300:]
 
     #Model pretrain
     for model in networks:
@@ -275,9 +275,9 @@ def main():
             # ImageLabelingLogger(datasets)
         ]
         model.fit(
-            x=datasets.train_data, #update once we have data from preprocessing 
-            y = datasets.density_train,
-            validation_data=datasets.test_data,
+            x=train_data, #update once we have data from preprocessing 
+            y = density_train,
+            validation_data=test_data,
             epochs=hp.num_epochs,
             batch_size=None,
             callbacks=callback_list,
