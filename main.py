@@ -34,9 +34,9 @@ def main():
     #densities = preprocessing.density_patches("ShanghaiTech_PartA_Test/part_A/test_data/ground-truth-h5")
     #images = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/test_data/images")
 
-    pretraining.main((images, densities))
+    # pretraining.main((images, densities))
 
-    pretraining.main(np.array(images, densities))
+    # pretraining.main(np.array(images, densities))
 
 
 
