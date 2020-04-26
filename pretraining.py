@@ -228,7 +228,7 @@ def test(model, datasets):
     # Run model on test set
     model.evaluate(
         x=test_data,
-        y=datasets.density_test
+        y=datasets.density_test,
         verbose=1
     )
 
