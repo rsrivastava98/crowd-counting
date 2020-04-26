@@ -229,7 +229,7 @@ def test(model, datasets):
     model.evaluate(
         x=test_data,
         y=datasets.density_test
-        verbose=1,
+        verbose=1
     )
 
 
