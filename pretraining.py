@@ -3,6 +3,11 @@ import tensorflow as tf
 import preprocessing
 import hyperparameters as hp
 from tensorflow.keras.layers import Conv2D, MaxPool2D, Flatten, Dense, GlobalAveragePooling3D
+from skimage import io
+import matplotlib.pyplot as plt
+
+from matplotlib.image import imread
+from skimage import color
 
 
 class R1Model(tf.keras.Model):
@@ -247,6 +252,9 @@ def main():
 
     density_train = densities[:300]
     density_test = densities[300:]
+
+    # io.imshow(train_data[0])
+    # plt.show()
 
     #Model pretrain
     for model in networks:
