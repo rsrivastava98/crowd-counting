@@ -19,8 +19,8 @@ def main():
     ### READ THIS! So there's a chance your computer will overheat, so I recommend uncommenting
     # one block at a time (leave the other 3 blocks commented out) because it will take about 20-30 minutes/block...
 
-    # output_name = "ShanghaiTech_PartA_Train/"
-    # Parallel(n_jobs=4)(delayed(preprocessing.density_wrapper)(i, output_name) for i in a_train)
+    output_name = "ShanghaiTech_PartA_Train/"
+    Parallel(n_jobs=4)(delayed(preprocessing.density_wrapper)(i, output_name) for i in a_train)
 
     output_name = "ShanghaiTech_PartA_Test/"
     Parallel(n_jobs=4)(delayed(preprocessing.density_wrapper)(i, output_name) for i in a_test)
