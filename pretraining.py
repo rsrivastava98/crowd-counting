@@ -244,9 +244,10 @@ def main():
 
     densities = preprocessing.density_patches("ShanghaiTech_PartA_Test/part_A/test_data/ground-truth-h5")
     images = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/test_data/images")
-    networks = [R1Model(), R2Model(), R3Model()]
+    networks = [R1Model(), R2Model(), R3Model()]   
 
     #datasets = {}
+
     train_data = images[:300] #temporary fix
     test_data = images[300:]
 
@@ -258,7 +259,7 @@ def main():
 
     #Model pretrain
     for model in networks:
-        model(tf.keras.Input(shape = (None, None, 1, None)))
+        model(tf.keras.Input(shape = (None, None, 1)))
         checkpoint_path = model.checkpoint_path
         model.summary()
 
@@ -266,15 +267,15 @@ def main():
         model.compile(
             optimizer=model.optimizer,
             loss=model.loss_fn,
-            metrics=["categorical_accuracy"])
+            metrics=['accuracy'])
 
         #training
         callback_list = [
             tf.keras.callbacks.ModelCheckpoint(
                 filepath=checkpoint_path + \
                         "weights.e{epoch:02d}-" + \
-                        "acc{val_categorical_accuracy:.4f}.h5",
-                monitor='val_categorical_accuracy',
+                        "acc{val_accuracy:.4f}.h5",
+                monitor='val_accuracy',
                 save_best_only=True,
                 save_weights_only=True),
             tf.keras.callbacks.TensorBoard(
