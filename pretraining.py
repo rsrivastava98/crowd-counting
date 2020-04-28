@@ -258,9 +258,9 @@ def main():
 
     #Model pretrain
     for model in networks:
-        # model(tf.keras.Input(shape = (300, 300, 3)))
+        model(tf.keras.Input(shape = (None, None, 1, None)))
         checkpoint_path = model.checkpoint_path
-        # model.summary()
+        model.summary()
 
         # Compile model graph
         model.compile(
