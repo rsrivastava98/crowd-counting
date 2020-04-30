@@ -1,0 +1,2 @@
+model_checkpoint_path: "weights.e07"
+all_model_checkpoint_paths: "weights.e07"
