@@ -31,7 +31,7 @@ class R1Model(tf.keras.Model):
             # Block 3
             Conv2D(16, 7, 1, padding="same", name="block3_conv1"),
             Conv2D(8, 7, 1, padding="same", name="block3_conv2"),
-            Conv2D(1, 1, 1, padding="same", name="block3_conv3"),
+            Conv2D(1, 1, 1, padding="same", name="block3_conv3")
         ]
 
     def call(self, img):
@@ -70,7 +70,7 @@ class R2Model(tf.keras.Model):
             # Block 3
             Conv2D(20, 5, 1, padding="same", name="block3_conv1"),
             Conv2D(10, 5, 1, padding="same", name="block3_conv2"),
-            Conv2D(1, 1, 1, padding="same", name="block3_conv3"),
+            Conv2D(1, 1, 1, padding="same", name="block3_conv3")
         ]
 
     def call(self, img):
@@ -109,7 +109,7 @@ class R3Model(tf.keras.Model):
             # Block 3
             Conv2D(24, 3, 1, padding="same", name="block3_conv1"),
             Conv2D(12, 3, 1, padding="same", name="block3_conv2"),
-            Conv2D(1, 1, 1, padding="same", name="block3_conv3"),
+            Conv2D(1, 1, 1, padding="same", name="block3_conv3")
         ]
 
     def call(self, img):
@@ -244,7 +244,7 @@ def main():
 
     densities = preprocessing.density_patches("ShanghaiTech_PartA_Test/part_A/test_data/ground-truth-h5")
     images = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/test_data/images")
-    networks = [R1Model(tf.keras.Input(shape = (None, None, 1))), R2Model(tf.keras.Input(shape = (None, None, 1))), R3Model(tf.keras.Input(shape = (None, None, 1)))]   
+    networks = [R1Model(), R2Model(), R3Model()]   
 
     #datasets = {}
 
@@ -259,6 +259,7 @@ def main():
 
     #Model pretrain
     for model in networks:
+        model(tf.keras.Input(shape = (None, None, 1)))
         checkpoint_path = model.checkpoint_path
         model.summary()
 
