@@ -282,7 +282,7 @@ def main():
                 filepath=checkpoint_path + \
                         "weights.e{epoch:02d}-" + \
                         "acc{val_accuracy:.4f}.h5",
-                monitor='val_accuracy',
+                monitor=tf.keras.metrics.MeanAbsoluteError(),
                 save_best_only=True,
                 save_weights_only=True),
             tf.keras.callbacks.TensorBoard(
