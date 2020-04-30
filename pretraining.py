@@ -32,6 +32,7 @@ class R1Model(tf.keras.Model):
             Conv2D(16, 7, 1, padding="same", name="block3_conv1"),
             Conv2D(8, 7, 1, padding="same", name="block3_conv2"),
             Conv2D(1, 1, 1, padding="same", name="block3_conv3"),
+            Flatten()
         ]
 
     def call(self, img):
@@ -71,6 +72,7 @@ class R2Model(tf.keras.Model):
             Conv2D(20, 5, 1, padding="same", name="block3_conv1"),
             Conv2D(10, 5, 1, padding="same", name="block3_conv2"),
             Conv2D(1, 1, 1, padding="same", name="block3_conv3"),
+            Flatten()
         ]
 
     def call(self, img):
@@ -110,6 +112,7 @@ class R3Model(tf.keras.Model):
             Conv2D(24, 3, 1, padding="same", name="block3_conv1"),
             Conv2D(12, 3, 1, padding="same", name="block3_conv2"),
             Conv2D(1, 1, 1, padding="same", name="block3_conv3"),
+            Flatten()
         ]
 
     def call(self, img):
@@ -254,6 +257,10 @@ def main():
     density_train = densities[:300]
     density_test = densities[300:]
 
+    for i in range(density_train.shape[0]):
+        density_train[i] = density_train[i].flatten()
+    for i in range(density_test.shape[0]):
+        density_test[i] = density_test[i].flatten()
     # io.imshow(train_data[0])
     # plt.show()
 
@@ -275,7 +282,7 @@ def main():
                 filepath=checkpoint_path + \
                         "weights.e{epoch:02d}-" + \
                         "acc{val_accuracy:.4f}.h5",
-                monitor='val_accuracy',
+                monitor=tf.keras.metrics.MeanAbsoluteError(),
                 save_best_only=True,
                 save_weights_only=True),
             tf.keras.callbacks.TensorBoard(
