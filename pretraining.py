@@ -267,7 +267,7 @@ def main():
         model.compile(
             optimizer=model.optimizer,
             loss=model.loss_fn,
-            metrics=['accuracy'])
+            metrics=[tf.keras.metrics.MeanAbsoluteError()])
 
         #training
         callback_list = [
