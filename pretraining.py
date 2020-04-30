@@ -244,7 +244,7 @@ def main():
 
     densities = preprocessing.density_patches("ShanghaiTech_PartA_Test/part_A/test_data/ground-truth-h5")
     images = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/test_data/images")
-    networks = [R1Model(), R2Model(), R3Model()]   
+    networks = [R1Model(tf.keras.Input(shape = (None, None, 1))), R2Model(tf.keras.Input(shape = (None, None, 1))), R3Model(tf.keras.Input(shape = (None, None, 1)))]   
 
     #datasets = {}
 
@@ -259,7 +259,6 @@ def main():
 
     #Model pretrain
     for model in networks:
-        model(tf.keras.Input(shape = (None, None, 1)))
         checkpoint_path = model.checkpoint_path
         model.summary()
 
