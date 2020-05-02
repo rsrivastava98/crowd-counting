@@ -51,14 +51,14 @@ def main():
 
     image_set =  np.zeros((len(images), img_h, img_w))
     for i, image in enumerate(images):
-        im = resize(image, (img_h, img_w))
+        im = resize(image, (img_h, img_w), anti_aliasing=True)
         image_set[i] = im
 
     image_set = image_set.reshape((len(image_set), img_h, img_w, 1))
 
     test_set =  np.zeros((len(images_test), img_h, img_w))
     for i, image in enumerate(images_test):
-        im = resize(image, (img_h, img_w))
+        im = resize(image, (img_h, img_w), anti_aliasing=True)
         test_set[i] = im
 
     test_set = test_set.reshape((len(test_set), img_h, img_w, 1))
@@ -68,10 +68,17 @@ def main():
     densities = preprocessing.density_patches("ShanghaiTech_PartA_Train/part_A/train_data/ground-truth-h5")
     densities_test = preprocessing.density_patches("ShanghaiTech_PartA_Test/part_A/test_data/ground-truth-h5")
 
+    # for i in range(10):
+    #     print(np.sum(densities[i]))
+    #     d = resize(densities[i], (img_hd, img_wd), anti_aliasing=True)
+    #     print(np.sum(d))
+    #     print()
+
+
     density_set =  np.zeros((len(densities), img_hd, img_wd))
     for i, image in enumerate(densities):
         image = np.array(image)
-        im = resize(image, (img_hd, img_wd))
+        im = resize(image, (img_hd, img_wd), anti_aliasing=True)
         density_set[i] = im
 
     density_set = density_set.reshape((len(density_set), img_hd, img_wd, 1))
@@ -79,7 +86,7 @@ def main():
     density_test =  np.zeros((len(densities_test), img_hd, img_wd))
     for i, image in enumerate(densities_test):
         image = np.array(image)
-        im = resize(image, (img_hd, img_wd))
+        im = resize(image, (img_hd, img_wd), anti_aliasing=True)
         density_test[i] = im
 
     density_test = density_test.reshape((len(density_test), img_hd, img_wd, 1))

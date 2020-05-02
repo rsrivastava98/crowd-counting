@@ -80,7 +80,6 @@ def gaussian_filter_density(gt):
     return density
 
 def generate_density_map(img, gt, img_path, h5_path):
-    
     gt_loc = np.zeros((img.shape[0], img.shape[1]))
     for i in range(0, len(gt)):
         if int(gt[i][1]) < img.shape[0] and int(gt[i][0]) < img.shape[1]:
@@ -125,7 +124,7 @@ def density_patches(data_path):
         
         for i in range(3):
             for j in range(3):
-                n = data [px*i:px*(i+1), py*j:py*(j+1)]
+                n = data [px*i:px*(i+1), py*j:py*(j+1)-1]
                 densities.append(n)
     densities = np.array(densities)
     return densities
