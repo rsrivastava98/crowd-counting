@@ -126,7 +126,7 @@ def density_patches(data_path):
             for j in range(3):
                 n = data [px*i:px*(i+1), py*j:py*(j+1)-1]
                 densities.append(n)
-    densities = np.array(densities)
+    # densities = np.array(densities)
     return densities
 
 def image_patches(data_path):
@@ -151,5 +151,5 @@ def image_patches(data_path):
                 n = data [px*i:px*(i+1), py*j:py*(j+1)-1]
                 images.append(n)
 
-    images = np.array(images)
+    # images = np.array(images)
     return images

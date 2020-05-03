@@ -43,6 +43,22 @@ class R1Model(tf.keras.Model):
 
         return img
 
+# class MaxModel(tf.keras.Model):
+#     def __init__(self):
+#         super(R1Model, self).__init__()
+
+#         self.max = [
+#             MaxPool2D(4, name="block1_pool")
+#         ]
+
+#     def call(self, img):
+#         """ Passes the image through the network. """
+
+#         for layer in self.r1:
+#             img = layer(img)
+
+#         return img
+
 def main():
 
     #input image sets
@@ -74,11 +90,19 @@ def main():
     #     print(np.sum(d))
     #     print()
 
+    # maxmodel = MaxModel()
+    # model(tf.keras.Input(shape = (img_h, img_w, 1)))
+    # model.summary()
+
+    # model.compile(
+    #     'sgd',
+    #     loss=tf.keras.losses.MeanSquaredError()
+    #     )
 
     density_set =  np.zeros((len(densities), img_hd, img_wd))
     for i, image in enumerate(densities):
         image = np.array(image)
-        im = resize(image, (img_hd, img_wd), anti_aliasing=True)
+        im = resize(image, (img_h, img_w), anti_aliasing=True)
         density_set[i] = im
 
     density_set = density_set.reshape((len(density_set), img_hd, img_wd, 1))
