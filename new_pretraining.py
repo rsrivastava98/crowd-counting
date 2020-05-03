@@ -59,18 +59,7 @@ class MaxModel(tf.keras.Model):
 
         return img
 
-def main():
-
-    #input image sets
-    images = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/train_data/images")
-    densities = preprocessing.density_patches("ShanghaiTech_PartA_Train/part_A/train_data/ground-truth-h5")
-    # images_test = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/test_data/images")
-
-        # for i in range(10):
-    #     print(np.sum(densities[i]))
-    #     d = resize(densities[i], (img_hd, img_wd), anti_aliasing=True)
-    #     print(np.sum(d))
-    #     print()
+def prepare_dataset(images, densities):
 
     maxmodel = MaxModel()
     maxmodel(tf.keras.Input(shape = (None, None, 1)))
@@ -101,8 +90,27 @@ def main():
         den = density.reshape((density.shape[1], density.shape[2], 1))
         data.append((im, den))
 
+    return data
+
+def main():
+
+    #input image sets
+    images = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/train_data/images")
+    densities = preprocessing.density_patches("ShanghaiTech_PartA_Train/part_A/train_data/ground-truth-h5")
+    # images_test = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/test_data/images")
+
+        # for i in range(10):
+    #     print(np.sum(densities[i]))
+    #     d = resize(densities[i], (img_hd, img_wd), anti_aliasing=True)
+    #     print(np.sum(d))
+    #     print()
+
+    data = prepare_dataset(images, densities) # returns tuples
     dataset = tf.data.Dataset.from_generator(lambda: data, output_shapes=(tf.TensorShape([None, None, 1]), tf.TensorShape([None, None, 1])), output_types=('float64', 'float64'))
     dataset = dataset.batch(1)
+
+
+    
     # image_set =  np.zeros((len(images), img_h, img_w))
     # for i, image in enumerate(images):
     #     im = resize(image, (img_h, img_w), anti_aliasing=True)
