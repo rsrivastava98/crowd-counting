@@ -40,7 +40,6 @@ class R1Model(tf.keras.Model):
             Conv2D(8, 7, 1, padding="same", name="block3_conv2", kernel_initializer=tf.random_normal_initializer(mean=0.0, stddev=0.01)),
             Conv2D(1, 1, 1, padding="same", name="block3_conv3", kernel_initializer=tf.random_normal_initializer(mean=0.0, stddev=0.01))
         ]
-        
 
     def call(self, img):
         """ Passes the image through the network. """
