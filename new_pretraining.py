@@ -30,15 +30,15 @@ class R1Model(tf.keras.Model):
 
         self.r1 = [
             # Block 1
-            Conv2D(16, 9, 1, padding="same", name="block1_conv1", input_shape = (None, None, 1), kernel_initializer=tf.random_normal_initializer(mean=0.0, stddev=0.01), dtype='float64'), #come back to input_shape if decide to not resize
-            MaxPool2D(2, name="block1_pool", dtype='float64'),
+            Conv2D(16, 9, 1, padding="same", name="block1_conv1", input_shape = (None, None, 1), kernel_initializer=tf.random_normal_initializer(mean=0.0, stddev=0.01)), #come back to input_shape if decide to not resize
+            MaxPool2D(2, name="block1_pool"),
             # Block 2
-            Conv2D(32, 7, 1, padding="same", name="block2_conv1", kernel_initializer=tf.random_normal_initializer(mean=0.0, stddev=0.01), dtype='float64'),
-            MaxPool2D(2, name="block2_pool", dtype='float64'),
+            Conv2D(32, 7, 1, padding="same", name="block2_conv1", kernel_initializer=tf.random_normal_initializer(mean=0.0, stddev=0.01)),
+            MaxPool2D(2, name="block2_pool"),
             # Block 3
-            Conv2D(16, 7, 1, padding="same", name="block3_conv1", kernel_initializer=tf.random_normal_initializer(mean=0.0, stddev=0.01), dtype='float64'),
-            Conv2D(8, 7, 1, padding="same", name="block3_conv2", kernel_initializer=tf.random_normal_initializer(mean=0.0, stddev=0.01), dtype='float64'),
-            Conv2D(1, 1, 1, padding="same", name="block3_conv3", kernel_initializer=tf.random_normal_initializer(mean=0.0, stddev=0.01), dtype='float64')
+            Conv2D(16, 7, 1, padding="same", name="block3_conv1", kernel_initializer=tf.random_normal_initializer(mean=0.0, stddev=0.01)),
+            Conv2D(8, 7, 1, padding="same", name="block3_conv2", kernel_initializer=tf.random_normal_initializer(mean=0.0, stddev=0.01)),
+            Conv2D(1, 1, 1, padding="same", name="block3_conv3", kernel_initializer=tf.random_normal_initializer(mean=0.0, stddev=0.01))
         ]
         
 
