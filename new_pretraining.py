@@ -43,8 +43,7 @@ class R1Model(tf.keras.Model):
 
         for layer in self.r1:
             img = layer(img)
-        tf.print(img)
-        img = tf.clip_by_value(img, -50, 50)
+        img = tf.clip_by_value(img, 0, 1)
         return img
 
     def loss_fn(self, labels, predictions):
@@ -80,12 +79,16 @@ class R2Model(tf.keras.Model):
 
         for layer in self.r2:
             img = layer(img)
-
+        img = tf.clip_by_value(img, 0, 1)
         return img
-    
+
     def loss_fn(self, labels, predictions):
         """ Loss function for the model. """
-        return tf.keras.backend.mean(abs(tf.keras.backend.sum(labels) - tf.keras.backend.sum(predictions)))
+        sum_A = tf.math.reduce_sum(labels, axis=(1,2,3))
+        sum_B = tf.math.reduce_sum(predictions, axis=(1,2,3))
+        diff = tf.math.subtract(sum_A, sum_B)
+        loss = tf.math.reduce_mean(tf.math.abs(diff))
+        return loss
 
 class R3Model(tf.keras.Model):
     def __init__(self):
@@ -111,29 +114,33 @@ class R3Model(tf.keras.Model):
 
         for layer in self.r3:
             img = layer(img)
-            img = tf.clip_by_value(img, -1e12, 1e12)
+        img = tf.clip_by_value(img, 0, 1)
         return img
-    
+
     def loss_fn(self, labels, predictions):
         """ Loss function for the model. """
-        return tf.keras.backend.mean(abs(tf.keras.backend.sum(labels) - tf.keras.backend.sum(predictions)))
+        sum_A = tf.math.reduce_sum(labels, axis=(1,2,3))
+        sum_B = tf.math.reduce_sum(predictions, axis=(1,2,3))
+        diff = tf.math.subtract(sum_A, sum_B)
+        loss = tf.math.reduce_mean(tf.math.abs(diff))
+        return loss
 
-class MaxModel(tf.keras.Model):
-    def __init__(self):
-        super(MaxModel, self).__init__()
+# class MaxModel(tf.keras.Model):
+#     def __init__(self):
+#         super(MaxModel, self).__init__()
 
-        self.max = [
-            AveragePooling2D(4, name="block1_pool", padding = "same", input_shape = (None, None, 1),  data_format='channels_last')
-        ]
+#         self.max = [
+#             AveragePooling2D(4, name="block1_pool", padding = "same", input_shape = (None, None, 1),  data_format='channels_last')
+#         ]
 
-    def call(self, img):
-        """ Passes the image through the network. """
+#     def call(self, img):
+#         """ Passes the image through the network. """
 
-        for layer in self.max:
-            img = layer(img)
-            img = tf.math.scalar_mul(16, img)
+#         for layer in self.max:
+#             img = layer(img)
+#             img = tf.math.scalar_mul(16, img)
 
-        return img
+#         return img
 
 def prepare_dataset(images, densities):
     # maxmodel = MaxModel()
