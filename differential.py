@@ -25,7 +25,7 @@ def differential_train(train_data, networks):
             
             y_pc = np.argmin(net_losses)
 
-            with tf.Session() as sess:
+            with tf.compat.v1.Session() as sess:
                  _, c = sess.run(['sgd', tf.keras.losses.MeanSquaredError], 
                          feed_dict={x: image, y: density})
 
