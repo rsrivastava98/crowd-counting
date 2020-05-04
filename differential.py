@@ -19,7 +19,7 @@ def differential_train(train_data, networks):
             net_losses = np.zeros(num_nets)
 
             for j, model in enumerate(networks):
-                y_pred = model.call(image)
+                y_pred = model.predict(image)
                 net_losses[j] = np.abs(np.sum(y_pred) - np.sum(density))
             
             y_pc = np.argmin(net_losses)
