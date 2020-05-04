@@ -45,7 +45,7 @@ def differential_train(train_data, networks):
             grads = np.float32(grads)
 
             print(grads.shape)
-            print(model.trainable_weights.shape)
+            print(w.shape for w in model.trainable_weights)
 
             model.optimizer.apply_gradients(zip(grads, model.trainable_weights))
 
