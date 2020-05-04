@@ -1,4 +1,3 @@
-import pretraining as pt
 import preprocessing
 import new_pretraining 
 import numpy as np
@@ -51,7 +50,7 @@ def main():
     images = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/train_data/images")
     densities = preprocessing.density_patches("ShanghaiTech_PartA_Train/part_A/train_data/ground-truth-h5")
 
-    networks = [pt.R1Model(), pt.R2Model(), pt.R3Model()]
+    networks = [new_pretraining.R1Model(), new_pretraining.R2Model(), new_pretraining.R3Model()]
 
     train_dataset = new_pretraining.prepare_dataset(images, densities)
 
