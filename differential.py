@@ -25,17 +25,22 @@ def differential_train(train_data, networks):
             
             y_pc = np.argmin(net_losses)
 
-            networks[y_pc].compile(
-                'sgd',
-                loss=tf.keras.losses.MeanSquaredError()
-            )
+            with tf.Session() as sess:
+                 _, c = sess.run(['sgd', tf.keras.losses.MeanSquaredError], 
+                         feed_dict={x: image, y: density})
 
-            dataset = tf.data.Dataset.from_generator(lambda: example, output_shapes=(tf.TensorShape([None, None, 1]), tf.TensorShape([None, None, 1])), output_types=('float64', 'float64'))
-            dataset = dataset.batch(1)
 
-            networks[y_pc].fit(x = dataset,
-                    epochs= 50,
-                    batch_size= None)
+            # networks[y_pc].compile(
+            #     'sgd',
+            #     loss=tf.keras.losses.MeanSquaredError()
+            # )
+
+            # dataset = tf.data.Dataset.from_generator(lambda: example, output_shapes=(tf.TensorShape([None, None, 1]), tf.TensorShape([None, None, 1])), output_types=('float64', 'float64'))
+            # dataset = dataset.batch(1)
+
+            # networks[y_pc].fit(x = dataset,
+            #         epochs= 50,
+            #         batch_size= None)
 
             switch_stat[y_pc] += 1
         
