@@ -12,7 +12,7 @@ def differential_train(train_data, networks):
     for model in networks:
          model.compile(
             optimizer= tf.keras.optimizers.SGD(learning_rate = 0.0005, momentum = 0.9),
-            loss=keras.losses.MeanAbsoluteError()
+            loss=model.loss_fn
             )
 
     min_mae = np.zeros(num_epochs)
@@ -39,11 +39,12 @@ def differential_train(train_data, networks):
             x = tf.constant(image)
             with tf.GradientTape() as tape:
                 tape.watch(x)
-                loss = np.abs(np.sum(model.call(im)) - np.sum(density))
-
-            grads = tape.gradient(loss, x)
+                loss = model.loss(model.call(im), dens)
+                #loss = np.abs(np.sum(model.call(im)) - np.sum(density))
 
             print(model.trainable_weights)
+
+            grads = tape.gradient(loss, x)
 
             model.optimizer.apply_gradients(zip(grads, model.trainable_weights))
 
