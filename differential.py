@@ -23,11 +23,16 @@ def differential_train(train_data, networks):
                 y_pred = model.predict(im, batch_size = 1)
                 net_losses[j] = np.abs(np.sum(y_pred) - np.sum(density))
             
-            y_pc = np.argmin(net_losses)
 
-            with tf.compat.v1.Session() as sess:
-                 _, c = sess.run(['sgd', tf.keras.losses.MeanSquaredError], 
-                         feed_dict={x: image, y: density})
+            y_pc = np.argmin(net_losses)
+            model = networks[y_pc]
+
+            with tf.GradientTape() as tape:
+                loss = net_losses[y_pc]
+            
+            grads = tape.gradient(loss, model.trainable_weights)
+
+            model.optimizer.apply_gradients(zip(grads, model.trainable_weights))
 
 
             # networks[y_pc].compile(

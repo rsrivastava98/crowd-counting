@@ -5,6 +5,7 @@ import hyperparameters as hp
 from tensorflow.keras.layers import Conv2D, MaxPool2D, Flatten, Dense, GlobalAveragePooling3D, AveragePooling2D
 from skimage import io
 import matplotlib.pyplot as plt
+import keras
 
 from matplotlib.image import imread
 from skimage import color
@@ -24,6 +25,8 @@ class R1Model(tf.keras.Model):
         super(R1Model, self).__init__()
 
         self.checkpoint_path = "./r1_checkpoints/"
+
+        self.optimizer = keras.optimizers.SGD()
 
         self.r1 = [
             # Block 1
@@ -61,6 +64,9 @@ class R2Model(tf.keras.Model):
 
         self.checkpoint_path = "./r2_checkpoints/"
 
+        self.optimizer = keras.optimizers.SGD()
+
+
         self.r2 = [
             # Block 1
             Conv2D(20, 7, 1, padding="same", name="block1_conv1", input_shape = (None, None, 1)), #come back to input_shape if decide to not resize
@@ -95,6 +101,9 @@ class R3Model(tf.keras.Model):
         super(R3Model, self).__init__()
 
         self.checkpoint_path = "./r3_checkpoints/"
+
+        self.optimizer = keras.optimizers.SGD()
+
 
         self.r3 = [
             # Block 1
