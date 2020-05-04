@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 import preprocessing
 import hyperparameters as hp
-from tensorflow.keras.layers import Conv2D, MaxPool2D, Flatten, Dense, GlobalAveragePooling3D
+from tensorflow.keras.layers import Conv2D, MaxPool2D, Flatten, Dense, GlobalAveragePooling3D, AveragePooling2D
 from skimage import io
 import matplotlib.pyplot as plt
 
@@ -27,15 +27,15 @@ class R1Model(tf.keras.Model):
 
         self.r1 = [
             # Block 1
-            Conv2D(16, 9, 1, padding="same", name="block1_conv1", input_shape = (None, None, 1)), #come back to input_shape if decide to not resize
+            Conv2D(16, 9, 1, padding="same", name="block1_conv1", input_shape = (None, None, 1), kernel_initializer=tf.random_normal_initializer(mean=0.0, stddev=0.01)), #come back to input_shape if decide to not resize
             MaxPool2D(2, name="block1_pool"),
             # Block 2
-            Conv2D(32, 7, 1, padding="same", name="block2_conv1"),
+            Conv2D(32, 7, 1, padding="same", name="block2_conv1", kernel_initializer=tf.random_normal_initializer(mean=0.0, stddev=0.01)),
             MaxPool2D(2, name="block2_pool"),
             # Block 3
-            Conv2D(16, 7, 1, padding="same", name="block3_conv1"),
-            Conv2D(8, 7, 1, padding="same", name="block3_conv2"),
-            Conv2D(1, 1, 1, padding="same", name="block3_conv3")
+            Conv2D(16, 7, 1, padding="same", name="block3_conv1", kernel_initializer=tf.random_normal_initializer(mean=0.0, stddev=0.01)),
+            Conv2D(8, 7, 1, padding="same", name="block3_conv2", kernel_initializer=tf.random_normal_initializer(mean=0.0, stddev=0.01)),
+            Conv2D(1, 1, 1, padding="same", name="block3_conv3", kernel_initializer=tf.random_normal_initializer(mean=0.0, stddev=0.01))
         ]
 
     def call(self, img):
@@ -43,13 +43,18 @@ class R1Model(tf.keras.Model):
 
         for layer in self.r1:
             img = layer(img)
-
+        img = tf.clip_by_value(img, -1e12, 1e12)
         return img
 
     def loss_fn(self, labels, predictions):
         """ Loss function for the model. """
-        return tf.keras.backend.mean(abs(tf.keras.backend.sum(labels) - tf.keras.backend.sum(predictions)))
-
+        # print(labels, predictions)
+        # print(tf.shape(labels), tf.shape(predictions))
+        sum_A = tf.math.reduce_sum(labels, axis=(1,2,3))
+        sum_B = tf.math.reduce_sum(predictions, axis=(1,2,3))
+        diff = tf.math.subtract(sum_A, sum_B)
+        loss = tf.math.reduce_mean(tf.math.abs(diff))
+        return loss
         
 
 class R2Model(tf.keras.Model):
@@ -107,7 +112,7 @@ class R3Model(tf.keras.Model):
 
         for layer in self.r3:
             img = layer(img)
-
+            img = tf.clip_by_value(img, -1e12, 1e12)
         return img
     
     def loss_fn(self, labels, predictions):
@@ -119,7 +124,7 @@ class MaxModel(tf.keras.Model):
         super(MaxModel, self).__init__()
 
         self.max = [
-            MaxPool2D(4, name="block1_pool", input_shape = (None, None, 1),  data_format='channels_last')
+            AveragePooling2D(4, name="block1_pool", padding = "same", input_shape = (None, None, 1),  data_format='channels_last')
         ]
 
     def call(self, img):
@@ -127,37 +132,41 @@ class MaxModel(tf.keras.Model):
 
         for layer in self.max:
             img = layer(img)
+            img = tf.math.scalar_mul(16, img)
 
         return img
 
 def prepare_dataset(images, densities):
-    maxmodel = MaxModel()
-    maxmodel(tf.keras.Input(shape = (None, None, 1)))
-    maxmodel.summary()
+    # maxmodel = MaxModel()
+    # maxmodel(tf.keras.Input(shape = (None, None, 1)))
+    # maxmodel.summary()
 
-    maxmodel.compile(
-        'sgd',
-        loss=tf.keras.losses.MeanSquaredError()
-        )
+    # maxmodel.compile(
+    #     'sgd',
+    #     loss=tf.keras.losses.MeanSquaredError()
+    #     )
     
-    dens = []
-    for density in densities:
-        dens.append(np.nan_to_num(density.reshape((density.shape[0], density.shape[1], 1))))
+    # dens = []
+    # for density in densities:
+    #     dens.append(np.nan_to_num(density.reshape((density.shape[0], density.shape[1], 1))))
     
     # density_dataset = tf.data.Dataset.from_generator(lambda: dens, output_shapes=tf.TensorShape([None, None, 1]), output_types='float64')
     # density_dataset = density_dataset.batch(1)
 
-    new_densities = []
-    for density in densities: 
-        new_densities.append(maxmodel.predict(x = density.reshape((1, density.shape[0], density.shape[1], 1))))
+    # new_densities = []
+    # for density in dens: 
+    #     new_densities.append(maxmodel.predict(x = density.reshape((1, density.shape[0], density.shape[1], 1))))
     # new_densities = maxmodel(density_dataset)
+
+    # for i in range(10):
+    #     print(np.sum(densities[i]), np.sum(new_densities[i]))
 
     data = []
     for i in range(len(images)):
         image = np.nan_to_num(images[i])
-        density = new_densities[i]
+        density = np.nan_to_num(densities[i])
         im = image.reshape((image.shape[0], image.shape[1], 1))
-        den = density.reshape((density.shape[1], density.shape[2], 1))
+        den = density.reshape((density.shape[0], density.shape[1], 1))
         data.append((im, den))
 
     return data
@@ -166,16 +175,16 @@ def main():
 
     #input image sets
     images = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/train_data/images")
-    images = images + (preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_B/train_data/images"))
+    # images = images + (preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_B/train_data/images"))
     print("train inputs loaded")
     densities = preprocessing.density_patches("ShanghaiTech_PartA_Train/part_A/train_data/ground-truth-h5")
-    densities = densities + (preprocessing.density_patches("ShanghaiTech_PartB_Train/part_B/train_data/ground-truth-h5"))
+    # densities = densities + (preprocessing.density_patches("ShanghaiTech_PartB_Train/part_B/train_data/ground-truth-h5"))
     print("train maps loaded")
     images_test = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/test_data/images")
-    images_test = images_test + (preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_B/test_data/images"))
+    # images_test = images_test + (preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_B/test_data/images"))
     print("test inputs loaded")
     densities_test = preprocessing.density_patches("ShanghaiTech_PartA_Test/part_A/test_data/ground-truth-h5")
-    densities_test = densities_test + (preprocessing.density_patches("ShanghaiTech_PartB_Test/part_B/test_data/ground-truth-h5"))
+    # densities_test = densities_test + (preprocessing.density_patches("ShanghaiTech_PartB_Test/part_B/test_data/ground-truth-h5"))
     print("test maps loaded")
 
     train_data = prepare_dataset(images, densities) # returns tuples
@@ -198,7 +207,7 @@ def main():
         model.summary()
 
         model.compile(
-            'sgd',
+            optimizer= tf.keras.optimizers.SGD(learning_rate = 0.0005, momentum = 0.9),
             loss=model.loss_fn
             )
 
@@ -222,7 +231,7 @@ def main():
 
         mae = 0.0
         i = 0
-        for image, dens_map in train_dataset.as_numpy_iterator(): 
+        for image, dens_map in test_dataset.as_numpy_iterator(): 
             pred = model.predict(x = image)
             mae += abs(np.sum(pred) - np.sum(dens_map))
             i += 1
