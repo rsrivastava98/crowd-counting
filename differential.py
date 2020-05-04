@@ -35,7 +35,7 @@ def differential_train(train_data, networks):
             model = networks[y_pc]
 
             with tf.GradientTape() as tape:
-                loss = np.abs(np.sum(y_preds[y_pc]) - np.sum(density))
+                loss = model.loss(density, y_pred)
             
             grads = tape.gradient(loss, model.trainable_weights)
 
