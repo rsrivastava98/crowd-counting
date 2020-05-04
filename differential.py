@@ -21,8 +21,7 @@ def differential_train(train_data, networks):
     for epoch in range(num_epochs):
         switch_stat = np.zeros(num_nets)
         for i, example in enumerate(train_data):
-            image = np.float64(example[0])
-            density = np.float64(example[1])
+        
             net_losses = np.zeros(num_nets)
             im = image.reshape((1, image.shape[0], image.shape[1], 1))
             dens = density.reshape((1, density.shape[0], density.shape[1], 1))
