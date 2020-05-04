@@ -24,6 +24,8 @@ def differential_train(train_data, networks):
                 net_losses[j] = np.abs(np.sum(y_pred) - np.sum(density))
             
 
+            print('YESS')
+
             y_pc = np.argmin(net_losses)
             model = networks[y_pc]
 
@@ -34,7 +36,6 @@ def differential_train(train_data, networks):
 
             model.optimizer.apply_gradients(zip(grads, model.trainable_weights))
 
-            print('YESS')
 
             # networks[y_pc].compile(
             #     'sgd',
