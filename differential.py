@@ -8,6 +8,12 @@ def differential_train(train_data, networks):
 
     num_epochs = 100 
 
+    for model in networks:
+         model.compile(
+            optimizer= tf.keras.optimizers.SGD(learning_rate = 0.0005, momentum = 0.9),
+            loss=model.loss_fn
+            )
+
     min_mae = np.zeros(num_epochs)
     num_nets = 3
 
@@ -23,9 +29,6 @@ def differential_train(train_data, networks):
                 y_pred = model.predict(im, batch_size = 1)
                 net_losses[j] = np.abs(np.sum(y_pred) - np.sum(density))
             
-
-            print('YESS')
-
             y_pc = np.argmin(net_losses)
             model = networks[y_pc]
 
