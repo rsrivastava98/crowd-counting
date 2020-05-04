@@ -62,7 +62,7 @@ def differential_train(train_data, networks):
             #         batch_size= None)
 
             switch_stat[y_pc] += 1
-
+            print(y_pc)
             print("DONE")
         
         print(switch_stat)
