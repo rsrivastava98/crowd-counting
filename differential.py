@@ -34,6 +34,7 @@ def differential_train(train_data, networks):
 
             model.optimizer.apply_gradients(zip(grads, model.trainable_weights))
 
+            print('YESS')
 
             # networks[y_pc].compile(
             #     'sgd',
