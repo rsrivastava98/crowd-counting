@@ -2,6 +2,7 @@ import preprocessing
 import new_pretraining 
 import numpy as np
 import tensorflow as tf
+from tensorflow import keras
 
 def differential_train(train_data, networks):
 
@@ -11,7 +12,7 @@ def differential_train(train_data, networks):
     for model in networks:
          model.compile(
             optimizer= tf.keras.optimizers.SGD(learning_rate = 0.0005, momentum = 0.9),
-            loss=model.loss_fn
+            loss=keras.losses.MeanAbsoluteError()
             )
 
     min_mae = np.zeros(num_epochs)
