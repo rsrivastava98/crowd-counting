@@ -43,13 +43,12 @@ class R1Model(tf.keras.Model):
 
         for layer in self.r1:
             img = layer(img)
-        img = tf.clip_by_value(img, 0, 1)
+        tf.print(img)
+        img = tf.clip_by_value(img, -50, 50)
         return img
 
     def loss_fn(self, labels, predictions):
         """ Loss function for the model. """
-        # print(labels, predictions)
-        # print(tf.shape(labels), tf.shape(predictions))
         sum_A = tf.math.reduce_sum(labels, axis=(1,2,3))
         sum_B = tf.math.reduce_sum(predictions, axis=(1,2,3))
         diff = tf.math.subtract(sum_A, sum_B)
