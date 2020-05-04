@@ -57,9 +57,9 @@ def main():
 
     differential_train(train_dataset, networks)
 
-    # checkpoint_paths = [] # model weight paths for all models REQUIRED TO LOAD BEST WEIGHTS FROM PRETRAINING
-    # for i, network in enumerate(networks):
-    #     network.load_weights(checkpoint_paths[i])
+    checkpoint_paths = ["r1_checkpoints/weights.e01.data-00001-of-00002", "r2_checkpoints/weights.e01.data-00001-of-00002", "r3_checkpoints/weights.e01.data-00001-of-00002"] # model weight paths for all models REQUIRED TO LOAD BEST WEIGHTS FROM PRETRAINING
+    for i, network in enumerate(networks):
+        network.load_weights(checkpoint_paths[i])
 
 
 if __name__ == '__main__':
