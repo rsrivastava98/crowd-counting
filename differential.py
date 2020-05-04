@@ -27,8 +27,6 @@ def differential_train(train_data, networks):
             im = image.reshape((1, image.shape[0], image.shape[1], 1))
             dens = density.reshape((1, density.shape[0], density.shape[1], 1))
 
-
-
             for j, model in enumerate(networks):
                 y_pred = model.predict(im)
                 net_losses[j] = np.abs(np.sum(y_pred) - np.sum(density))
@@ -44,7 +42,8 @@ def differential_train(train_data, networks):
 
             grads = tape.gradient(loss, x)
 
-            print(grads)
+            print(grads.dtype)
+            print(model.trainable_weights.dtype)
 
             model.optimizer.apply_gradients(zip(grads, model.trainable_weights))
 
