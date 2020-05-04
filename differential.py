@@ -43,7 +43,8 @@ def differential_train(train_data, networks):
             grads = tape.gradient(loss, x)
 
             print(grads.dtype)
-            print(model.trainable_weights.dtype)
+            for w in model.trainable_weights:
+                print(w.dtype)
 
             model.optimizer.apply_gradients(zip(grads, model.trainable_weights))
 
