@@ -40,7 +40,9 @@ def differential_train(train_data, networks):
                 loss = model.loss(model.call(x), dens)
                 #loss = np.abs(np.sum(model.call(im)) - np.sum(density))
 
-            grads = tape.gradient(loss, x, dtype = 'float32')
+            grads = tape.gradient(loss, x)
+
+            grads = np.float32(grads)
 
             print(grads.dtype)
             for w in model.trainable_weights:
