@@ -38,13 +38,11 @@ def differential_train(train_data, networks):
 
             x = tf.constant(image)
             with tf.GradientTape() as tape:
-                tape.watch(x)
+                tape.watch(model.trainable_weights)
                 loss = model.loss(model.call(im), dens)
                 #loss = np.abs(np.sum(model.call(im)) - np.sum(density))
 
-            print(model.trainable_weights)
-
-            grads = tape.gradient(loss, x)
+            grads = tape.gradient(loss, model.trainable_weights)
 
             model.optimizer.apply_gradients(zip(grads, model.trainable_weights))
 
