@@ -40,7 +40,7 @@ def differential_train(train_data, networks):
                 y_pred = model.call(im)
                 loss = np.abs(np.sum(y_pred) - np.sum(density))
             
-            grads = tape.gradient(loss, x)
+            grads = tape.gradient(y_pred, x)
 
             model.optimizer.apply_gradients(zip(grads, model.trainable_weights))
 
