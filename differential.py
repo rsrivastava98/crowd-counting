@@ -24,16 +24,18 @@ def differential_train(train_data, networks):
             density = example[1]
             net_losses = np.zeros(num_nets)
 
-            for j, model in enumerate(networks):
-                im = image.reshape((1, image.shape[0], image.shape[1], 1))
-                y_pred = model.predict(im, batch_size = 1)
-                net_losses[j] = np.abs(np.sum(y_pred) - np.sum(density))
-            
-            y_pc = np.argmin(net_losses)
-            model = networks[y_pc]
-
             with tf.GradientTape() as tape:
+                
+                for j, model in enumerate(networks):
+                    im = image.reshape((1, image.shape[0], image.shape[1], 1))
+                    y_pred = model.predict(im, batch_size = 1)
+                    net_losses[j] = np.abs(np.sum(y_pred) - np.sum(density))
+                
+                y_pc = np.argmin(net_losses)
+                model = networks[y_pc]
+
                 loss = net_losses[y_pc]
+
             
             grads = tape.gradient(loss, model.trainable_weights)
 
