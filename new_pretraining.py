@@ -5,7 +5,7 @@ import hyperparameters as hp
 from tensorflow.keras.layers import Conv2D, MaxPool2D, Flatten, Dense, GlobalAveragePooling3D, AveragePooling2D
 from skimage import io
 import matplotlib.pyplot as plt
-import keras
+from tensorflow import keras
 
 from matplotlib.image import imread
 from skimage import color
