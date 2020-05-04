@@ -28,8 +28,6 @@ class R1Model(tf.keras.Model):
 
         self.optimizer = keras.optimizers.SGD()
 
-        tf.keras.backend.set_floatx('float64')
-
         self.r1 = [
             # Block 1
             Conv2D(16, 9, 1, padding="same", name="block1_conv1", input_shape = (None, None, 1), kernel_initializer=tf.random_normal_initializer(mean=0.0, stddev=0.01)), #come back to input_shape if decide to not resize
@@ -42,7 +40,7 @@ class R1Model(tf.keras.Model):
             Conv2D(8, 7, 1, padding="same", name="block3_conv2", kernel_initializer=tf.random_normal_initializer(mean=0.0, stddev=0.01)),
             Conv2D(1, 1, 1, padding="same", name="block3_conv3", kernel_initializer=tf.random_normal_initializer(mean=0.0, stddev=0.01))
         ]
-
+        
 
     def call(self, img):
         """ Passes the image through the network. """
@@ -69,7 +67,6 @@ class R2Model(tf.keras.Model):
 
         self.optimizer = keras.optimizers.SGD()
 
-        tf.keras.backend.set_floatx('float64')
 
         self.r2 = [
             # Block 1
@@ -108,7 +105,6 @@ class R3Model(tf.keras.Model):
 
         self.optimizer = keras.optimizers.SGD()
 
-        tf.keras.backend.set_floatx('float64')
 
         self.r3 = [
             # Block 1
