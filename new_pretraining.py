@@ -43,7 +43,7 @@ class R1Model(tf.keras.Model):
 
         for layer in self.r1:
             img = layer(img)
-        img = tf.clip_by_value(img, 0, 1)
+            img = tf.clip_by_value(img, 0, 1)
         return img
 
     def loss_fn(self, labels, predictions):
@@ -79,7 +79,7 @@ class R2Model(tf.keras.Model):
 
         for layer in self.r2:
             img = layer(img)
-        img = tf.clip_by_value(img, 0, 1)
+            img = tf.clip_by_value(img, 0, 1)
         return img
 
     def loss_fn(self, labels, predictions):
@@ -114,7 +114,7 @@ class R3Model(tf.keras.Model):
 
         for layer in self.r3:
             img = layer(img)
-        img = tf.clip_by_value(img, 0, 1)
+            img = tf.clip_by_value(img, 0, 1)
         return img
 
     def loss_fn(self, labels, predictions):
