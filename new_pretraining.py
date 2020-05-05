@@ -238,7 +238,7 @@ def main():
             x = train_dataset,
             validation_data = test_dataset,
             epochs= hp.num_epochs,
-            batch_size= 180,
+            batch_size= None,
             callbacks= callback_list
         )
 
