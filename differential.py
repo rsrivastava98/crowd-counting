@@ -54,6 +54,11 @@ def differential_train(train_data, test_data, networks):
     
     print(min_mae)
 
+
+    for i, network in enumerate(networks):
+        network.save_weights('./differential_checkpoints/r'+(i+1)+'model')
+
+
 def calc_min_mae(test_data, networks):
 
     patch_counts_total = np.zeros((5, 2))
