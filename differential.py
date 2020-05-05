@@ -133,11 +133,12 @@ def main():
 
     networks = [new_pretraining.R1Model(), new_pretraining.R2Model(), new_pretraining.R3Model()]
 
+    checkpoint_paths = ["r1_checkpoints/weights.e01.data-00001-of-00002", "r2_checkpoints/weights.e01.data-00001-of-00002", "r3_checkpoints/weights.e01.data-00001-of-00002"] # model weight paths for all models REQUIRED TO LOAD BEST WEIGHTS FROM PRETRAINING
+    for i in range(len(networks)):
+        networks[i].load_weights(checkpoint_paths[i])
+    
     differential_train(train_dataset, test_dataset, networks)
 
-    checkpoint_paths = ["r1_checkpoints/weights.e01.data-00001-of-00002", "r2_checkpoints/weights.e01.data-00001-of-00002", "r3_checkpoints/weights.e01.data-00001-of-00002"] # model weight paths for all models REQUIRED TO LOAD BEST WEIGHTS FROM PRETRAINING
-    for i, network in enumerate(networks):
-        network.load_weights(checkpoint_paths[i])
 
 
 if __name__ == '__main__':
