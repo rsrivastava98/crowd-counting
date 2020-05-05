@@ -229,7 +229,7 @@ def main():
             tf.keras.callbacks.ModelCheckpoint(
                 filepath=checkpoint_path + \
                         "weights.e{epoch:02d}-" + \
-                    "acc{val_sparse_categorical_accuracy:.4f}.h5",
+                    ".h5",
                 save_best_only=True,
                 save_weights_only=True)
             ]
