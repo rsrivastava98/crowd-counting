@@ -46,7 +46,7 @@ class R1Model(tf.keras.Model):
 
         for layer in self.r1:
             img = layer(img)
-            img = tf.clip_by_value(img, 0, 1)
+        img = tf.clip_by_value(img, 0, 1)
         return img
 
     def loss_fn(self, labels, predictions):
