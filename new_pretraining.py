@@ -85,7 +85,7 @@ class R2Model(tf.keras.Model):
 
         for layer in self.r2:
             img = layer(img)
-        img = tf.clip_by_value(img, 0, 1)
+            img = tf.clip_by_value(img, 0, 1)
         return img
 
     def loss_fn(self, labels, predictions):
@@ -123,7 +123,7 @@ class R3Model(tf.keras.Model):
 
         for layer in self.r3:
             img = layer(img)
-        img = tf.clip_by_value(img, 0, 1)
+            img = tf.clip_by_value(img, 0, 1)
         return img
 
     def loss_fn(self, labels, predictions):
@@ -178,7 +178,7 @@ def prepare_dataset(images, densities):
 
     data = []
     for i in range(len(images)):
-        image = np.nan_to_num(images[i])
+        image = np.nan_to_num(images[i])/255
         density = np.nan_to_num(densities[i])
         im = image.reshape((image.shape[0], image.shape[1], 1))
         den = density.reshape((density.shape[0], density.shape[1], 1))
