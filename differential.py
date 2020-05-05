@@ -18,6 +18,7 @@ def differential_train(train_data, test_data, networks):
     num_nets = 3
 
     for epoch in range(num_epochs):
+        print("epoch" + str(epoch))
         switch_stat = np.zeros(num_nets)
         for i, example in enumerate(train_data):
             image = example[0]
