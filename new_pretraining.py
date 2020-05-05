@@ -13,10 +13,9 @@ from skimage.transform import resize
 import h5py
 import sys
 import os
-
+kush = 1
 img_h = 200
 img_w = 200
-
 img_hd = int(img_h/4)
 img_wd = int(img_w/4)
 
@@ -175,10 +174,9 @@ def prepare_dataset(images, densities):
 
     # for i in range(10):
     #     print(np.sum(densities[i]), np.sum(new_densities[i]))
-
     data = []
     for i in range(len(images)):
-        image = np.nan_to_num(images[i])/255
+        image = np.nan_to_num(images[i])
         density = np.nan_to_num(densities[i])
         im = image.reshape((image.shape[0], image.shape[1], 1))
         den = density.reshape((density.shape[0], density.shape[1], 1))
@@ -222,7 +220,7 @@ def main():
         model.summary()
 
         model.compile(
-            optimizer= tf.keras.optimizers.SGD(learning_rate = 0.0005, momentum = 0.9),
+            optimizer= tf.keras.optimizers.SGD(learning_rate = 0.01, momentum = 0.9),
             loss=model.loss_fn
             )
 
