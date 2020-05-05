@@ -178,7 +178,7 @@ def prepare_dataset(images, densities):
 
     data = []
     for i in range(len(images)):
-        image = np.nan_to_num(images[i])
+        image = np.nan_to_num(images[i])/255
         density = np.nan_to_num(densities[i])
         im = image.reshape((image.shape[0], image.shape[1], 1))
         den = density.reshape((density.shape[0], density.shape[1], 1))
