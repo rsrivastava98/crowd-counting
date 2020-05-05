@@ -225,21 +225,20 @@ def main():
             loss=model.loss_fn
             )
 
-        # callback_list = [
-        #     tf.keras.callbacks.ModelCheckpoint(
-        #         filepath=checkpoint_path + \
-        #                 "weights.e{epoch:02d}-" + \
-        #             ".h5",
-        #         save_best_only=True,
-        #         save_weights_only=True)
-        #     ]
+        callback_list = [
+            tf.keras.callbacks.ModelCheckpoint(
+                filepath=checkpoint_path + \
+                        "weights.e{epoch:02d}",
+                save_best_only=True,
+                save_weights_only=True)
+            ]
 
         model.fit(
             x = train_dataset,
             validation_data = test_dataset,
             epochs= hp.num_epochs,
             batch_size= None,
-            # callbacks= callback_list
+            callbacks= callback_list
         )
 
         model.save_weights(checkpoint_path + "weights.h5")
