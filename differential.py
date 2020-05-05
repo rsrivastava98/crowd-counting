@@ -59,7 +59,7 @@ def calc_min_mae(test_data, networks):
     patch_counts_sub = np.zeros((3,2))
     loss = np.zeros(3)
     counts = np.zeros(3)
-    mae = np.zeros(3)
+    mae = np.zeros(5)
     total_losses = np.zeros(5)
     total_counts = np.zeros(5)
     patchct = 0
