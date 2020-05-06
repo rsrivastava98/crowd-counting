@@ -14,6 +14,7 @@ import new_pretraining as pt
 import random
 from vgg_model import VGGModel
 import hyperparameters as hp
+import new_pretraining 
 
 def train(model, train_data, test_data, checkpoint_path):
     """ Training routine. """
@@ -27,10 +28,6 @@ def train(model, train_data, test_data, checkpoint_path):
         
         # ImageLabelingLogger(datasets)
     ]
-
-    # Include confusion logger in callbacks if flag set
-    # if ARGS.confusion:
-    #     callback_list.append(ConfusionMatrixLogger(datasets))
 
     # Begin training
     model.fit(
@@ -54,42 +51,9 @@ def main():
     # datasets = Datasets(ARGS.data, ARGS.task)
 
     model = VGGModel()
-    checkpoint_path = "./vgg_model_checkpoints/"
-    model(tf.keras.Input(shape=(224, 224, 3)))
+    checkpoint_path = "./r1_checkpoints/checkpoint"
+    model(tf.keras.Input(shape=(None, None, 1)))
     model.summary()
-
-    # Don't load pretrained vgg if loading checkpoint
-    # if ARGS.load_checkpoint is None:
-    #     # model.load_weights(ARGS.load_vgg, by_name=True)
-    #     model.load_weights('/vgg16_imagenet.h5', by_name=True)
-
-
-    # if ARGS.load_checkpoint is not None:
-    #     model.load_weights(ARGS.load_checkpoint)
-
-    # if not os.path.exists(checkpoint_path):
-    #     os.makedirs(checkpoint_path)
-
-    # Compile model graph
-    #input image sets
-    # images = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/train_data/images")
-    # print("train inputs loaded")
-    # densities = preprocessing.density_patches("ShanghaiTech_PartA_Train/part_A/train_data/ground-truth-h5")
-    # print("train maps loaded")
-    # images_test = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/test_data/images")
-    # print("test inputs loaded")
-    # densities_test = preprocessing.density_patches("ShanghaiTech_PartA_Test/part_A/test_data/ground-truth-h5")
-    # print("test maps loaded")
-
-    # train_data = pt.prepare_dataset(images, densities) # returns tuples
-    # train_dataset = tf.data.Dataset.from_generator(lambda: train_data, output_shapes=(tf.TensorShape([None, None, 1]), tf.TensorShape([None, None, 1])), output_types=('float64', 'float64'))
-    # train_dataset = train_dataset.batch(1)
-    # print("train dataset loaded")
-
-    # test_data = pt.prepare_dataset(images_test, densities_test) # returns tuples
-    # test_dataset = tf.data.Dataset.from_generator(lambda: test_data, output_shapes=(tf.TensorShape([None, None, 1]), tf.TensorShape([None, None, 1])), output_types=('float64', 'float64'))
-    # test_dataset = test_dataset.batch(1)
-    # print("test dataset loaded")
 
 
     model.compile(
@@ -97,8 +61,32 @@ def main():
         loss=model.loss_fn,
         # metrics=["sparse_categorical_accuracy"])
     )
-    # if ARGS.evaluate:
-    # else:
+
+    images = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/train_data/images")
+    # images = images + (preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_B/train_data/images"))
+    print("train inputs loaded")
+    densities = preprocessing.density_patches("ShanghaiTech_PartA_Train/part_A/train_data/ground-truth-h5")
+    # densities = densities + (preprocessing.density_patches("ShanghaiTech_PartB_Train/part_B/train_data/ground-truth-h5"))
+    print("train maps loaded")
+    images_test = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/test_data/images")
+    # images_test = images_test + (preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_B/test_data/images"))
+    print("test inputs loaded")
+    densities_test = preprocessing.density_patches("ShanghaiTech_PartA_Test/part_A/test_data/ground-truth-h5")
+    # densities_test = densities_test + (preprocessing.density_patches("ShanghaiTech_PartB_Test/part_B/test_data/ground-truth-h5"))
+    print("test maps loaded")
+
+    train_data = new_pretraining.prepare_dataset(images, densities) # returns tuples
+    train_dataset = tf.data.Dataset.from_generator(lambda: train_data, output_shapes=(tf.TensorShape([None, None, 1]), tf.TensorShape([None, None, 1])), output_types=('float64', 'float64'))
+    train_dataset = train_dataset.batch(1)
+    train_dataset = train_dataset.shuffle(2700, reshuffle_each_iteration=True)
+    print("train dataset loaded")
+
+    test_data = new_pretraining.prepare_dataset(images_test, densities_test) # returns tuples
+    test_dataset = tf.data.Dataset.from_generator(lambda: test_data, output_shapes=(tf.TensorShape([None, None, 1]), tf.TensorShape([None, None, 1])), output_types=('float64', 'float64'))
+    test_dataset = test_dataset.batch(1)
+    print("test dataset loaded")
+
+
     train(model, train_dataset, test_dataset, checkpoint_path)
     test(model, test_dataset)
 
@@ -138,11 +126,10 @@ if __name__ == '__main__':
 #         minval_holder = []
 #         for model in enumerate(models):
 #             minval_holder.append(np.subtract(model(i) - densities(i))
-
 #         l_best.append(min(minval_holder))
 
 
-# # Train switch classifier。。。this is copied from the github as is. 
+# # # Train switch classifier。。。this is copied from the github as is. 
 # num_epochs = 1
 # for epoch in range(num_epochs):
 #     avg_pc_loss = 0.0
@@ -154,7 +141,7 @@ if __name__ == '__main__':
 #         #     log(log_fp, 'iter: %d, pc_loss: %f, avg_pc_loss: %f' % \
 #         #                     (i, pc_loss, avg_pc_loss / (i + 1)))
 #     avg_pc_loss /= (i + 1)
-    # log(log_fp, 'done; avg_pc_Loss: %.12f' % (avg_pc_loss))
+#     log(log_fp, 'done; avg_pc_Loss: %.12f' % (avg_pc_loss))
 
 
 
