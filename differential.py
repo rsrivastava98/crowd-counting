@@ -131,9 +131,18 @@ def main():
 
     test_dataset = new_pretraining.prepare_dataset(test_images, test_densities)
 
-    networks = [new_pretraining.R1Model(), new_pretraining.R2Model(), new_pretraining.R3Model()]
+    model1 = new_pretraining.R1Model()
+    model1(tf.keras.Input(shape=(None, None, 1)))
 
-    checkpoint_paths = ["r1_checkpoints/weights.e01.data-00001-of-00002", "r2_checkpoints/weights.e01.data-00001-of-00002", "r3_checkpoints/weights.e01.data-00001-of-00002"] # model weight paths for all models REQUIRED TO LOAD BEST WEIGHTS FROM PRETRAINING
+    model2 = new_pretraining.R2Model()
+    model2(tf.keras.Input(shape=(None, None, 1)))
+
+    model3 = new_pretraining.R3Model()
+    model3(tf.keras.Input(shape=(None, None, 1)))
+
+    networks = [model1, model2, model3]
+
+    checkpoint_paths = ["r1_checkpoints/weights.h5", "r2_checkpoints/weights.h5", "r3_checkpoints/weights.h5"] # model weight paths for all models REQUIRED TO LOAD BEST WEIGHTS FROM PRETRAINING
     for i in range(len(networks)):
         networks[i].load_weights(checkpoint_paths[i])
     

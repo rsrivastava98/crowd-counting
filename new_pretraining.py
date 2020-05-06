@@ -203,7 +203,7 @@ def main():
     train_data = prepare_dataset(images, densities) # returns tuples
     train_dataset = tf.data.Dataset.from_generator(lambda: train_data, output_shapes=(tf.TensorShape([None, None, 1]), tf.TensorShape([None, None, 1])), output_types=('float64', 'float64'))
     train_dataset = train_dataset.batch(1)
-    train_dataset = train_dataset.shuffle(2700, reshuffle_each_iteration=True)
+    # train_dataset = train_dataset.shuffle(2700, reshuffle_each_iteration=True)
     print("train dataset loaded")
 
     test_data = prepare_dataset(images_test, densities_test) # returns tuples
