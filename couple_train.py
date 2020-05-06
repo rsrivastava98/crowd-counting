@@ -22,7 +22,7 @@ def train(model, train_data, test_data, checkpoint_path):
     callback_list = [
         tf.keras.callbacks.ModelCheckpoint(
             filepath=checkpoint_path + \
-                    "weights.e{epoch:02d}-",
+                    "weights.e{epoch:02d}.h5",
             save_best_only=True,
             save_weights_only=True)
         
