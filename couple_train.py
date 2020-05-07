@@ -16,6 +16,7 @@ from vgg_model import VGGModel
 import hyperparameters as hp
 import new_pretraining 
 import os
+from new_pretraining import prepare_dataset
 
 def train(model, train_data, test_data, checkpoint_path):
     """ Training routine. """
