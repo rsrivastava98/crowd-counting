@@ -6,7 +6,7 @@ from tensorflow import keras
 
 def differential_train(train_data, test_data, networks):
 
-    num_epochs = 100 
+    num_epochs = 1
 
     for model in networks:
          model.compile(
@@ -56,7 +56,7 @@ def differential_train(train_data, test_data, networks):
 
 
     for i, network in enumerate(networks):
-        network.save_weights('./differential_checkpoints/r'+(i+1)+'model')
+        network.save_weights('./differential_checkpoints/r'+str(i+1)+'model')
 
 
 def calc_min_mae(test_data, networks):
