@@ -11,7 +11,7 @@ import preprocessing
 import sys
 import new_pretraining as pt
 import random
-from vgg_model import VGGModel
+import vgg_model
 import hyperparameters as hp
 
 def train_switch():
@@ -39,7 +39,7 @@ def train_switch():
             # if i % 500 == 0: calculate average
         print(avg_pc_loss)
 
-def train_switched_differential():
+def train_switched_differential(train_data, test_data, networks):
 
     #for epoch
     num_epochs = 1
@@ -52,22 +52,45 @@ def train_switched_differential():
             image = example[0]
             density = example[1]
         
-            #TODO: run switch classifier to get label
-            label = run_funcs[0](X) #this line gets the label from switch
-            y_pc = np.argmax(label, axis = 1)[0] #this line stores which regressor is chosen
+            # run switch classifier to get label
+            label = networks[0].predict(image) #this line gets the label from switch
+            y_pc = np.argmax(label, axis = 1) #this line stores which regressor is chosen
     
-            #TODO: backpropagate regressor suggested by classifier
+            #backpropagate regressor suggested by classifier
             model_chosen = networks[y_pc + 1] #gets the chosen regressor
             #compute loss for chosen regressor
-            #backpropogate
+            #backpropogate from differential
+            x = tf.constant(image, dtype='float32')
+            with tf.GradientTape() as tape:
+                tape.watch(model_chosen.trainable_weights)
+                loss = model_chosen.loss(model_chosen.call(x), density)
+                #loss = np.abs(np.sum(model.call(im)) - np.sum(density))
+
+            grads = tape.gradient(loss, model_chosen.trainable_weights)
+
+            networks[y_pc+1].optimizer.apply_gradients(zip(grads, networks[y_pc+1].trainable_weights))
+
+            switch_stat[y_pc] += 1
 
 def coupled_train(train_data, test_data, networks):
 
     num_epochs = 30
+
+    networks[0].compile(
+        optimizer=model.optimizer,
+        loss=model.loss_fn,
+        metrics=["sparse_categorical_accuracy"])
+
+    for i in range(3):
+        networks[i+1].compile(
+            optimizer= tf.keras.optimizers.SGD(learning_rate = 0.0005, momentum = 0.9),
+            loss=networks[i+1].loss_fn
+            )
+
     min_mae = np.zeros(num_epochs)
     for each epoch in range(num_epochs):
         train_switch()
-        train_switched_differential()
+        train_switched_differential(train_data, test_data, networks)
 
         min_mae[epoch] = calc_min_mae(test_data, networks)
     
@@ -154,7 +177,8 @@ def train():
 
     # get weights from differential
     #TODO: still need to add file name
-    checkpoint_paths = ["./differential_checkpoints/r1model/",
+    checkpoint_paths = ["./vgg_model_checkpoints/"
+                        "./differential_checkpoints/r1model/",
                         "./differential_checkpoints/r2model/",
                         "./differential_checkpoints/r3model/"]
 
@@ -168,14 +192,15 @@ def train():
     model3 = new_pretraining.R3Model()
     model3(tf.keras.Input(shape=(None, None, 1)))
 
-    networks = [model1, model2, model3]
+    switch_model = vgg_model.VGGModel()
+    switch_model(tf.keras.Input(shape=(None, None, 1)))
+
+    networks = [switch_model, model1, model2, model3]
 
     # load checkpoints into models
     for i in range(len(networks)):
         networks[i].load_weights(checkpoint_paths[i])
 
-    #TODO: Add VGG weights loading
-    
     # train_coupled    
     coupled_train(train_dataset, test_dataset, networks) 
 
