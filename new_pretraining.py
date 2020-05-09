@@ -228,7 +228,7 @@ def main():
         callback_list = [
             tf.keras.callbacks.ModelCheckpoint(
                 filepath=checkpoint_path + \
-                        "weights.e{epoch:02d}.h5",
+                        "weights.e{epoch:02d}",
                 save_best_only=True,
                 save_weights_only=True)
             ]
@@ -241,7 +241,7 @@ def main():
             callbacks= callback_list
         )
 
-        # model.save_weights(checkpoint_path + "weights.h5")
+        model.save_weights(checkpoint_path + "weights.h5")
 
         print("done training")
 

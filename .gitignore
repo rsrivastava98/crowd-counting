@@ -129,3 +129,6 @@ dmypy.json
 .pyre/
 
 *.h5
+
+.index
+.data-00000-of-00001

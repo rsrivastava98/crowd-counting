@@ -142,7 +142,7 @@ def main():
 
     networks = [model1, model2, model3]
 
-    checkpoint_paths = ["r1_checkpoints/weights.e01.h5", "r2_checkpoints/weights.e01.h5", "r3_checkpoints/weights.e01.h5"] # model weight paths for all models REQUIRED TO LOAD BEST WEIGHTS FROM PRETRAINING
+    checkpoint_paths = ["r1_checkpoints/weights.h5", "r2_checkpoints/weights.h5", "r3_checkpoints/weights.h5"] # model weight paths for all models REQUIRED TO LOAD BEST WEIGHTS FROM PRETRAINING
     for i in range(len(networks)):
         networks[i].load_weights(checkpoint_paths[i])
     

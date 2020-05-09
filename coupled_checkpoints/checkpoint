@@ -1,0 +1,2 @@
+model_checkpoint_path: "r4model"
+all_model_checkpoint_paths: "r4model"
