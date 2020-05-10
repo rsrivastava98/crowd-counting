@@ -150,7 +150,7 @@ class R3Model(tf.keras.Model):
 
 #         return img
 
-def prepare_dataset(images, densities):
+def prepare_dataset(images, densities, grayscale=True):
     # maxmodel = MaxModel()
     # maxmodel(tf.keras.Input(shape = (None, None, 1)))
     # maxmodel.summary()
@@ -178,10 +178,15 @@ def prepare_dataset(images, densities):
     for i in range(len(images)):
         image = np.nan_to_num(images[i])
         density = np.nan_to_num(densities[i])
-        im = image.reshape((image.shape[0], image.shape[1], 1))
+        if grayscale==False:
+            im = image.reshape((image.shape[0], image.shape[1], 3))
+        else:
+            im = image.reshape((image.shape[0], image.shape[1], 1))
         den = density.reshape((density.shape[0], density.shape[1], 1))
         data.append((im, den))
 
+    print(data[0][0])
+    print(data[0][0].shape)
     return data
 
 def main():
