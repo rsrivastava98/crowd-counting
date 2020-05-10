@@ -129,7 +129,7 @@ def density_patches(data_path):
     # densities = np.array(densities)
     return densities
 
-def image_patches(data_path, color=False):
+def image_patches(data_path, grayscale=True):
     path, dirs, files = next(os.walk(data_path))
     file_count = len(files)
 
@@ -140,7 +140,7 @@ def image_patches(data_path, color=False):
     images = []
     for img in filenames:
         
-        if color==True:
+        if grayscale==False:
             data = io.imread(img)
         else:
             data = color.rgb2gray(io.imread(img))
