@@ -16,30 +16,62 @@ import vgg_model
 import hyperparameters as hp
 from skimage import color
 
-def train_switch():
+def train_switch(train_data, test_data, networks):
+    
+    # create label set for training switch classifier
+    num_classes = len(networks) - 1
+    eq_data = [[] for _ in range(num_classes)]
+    train_new = []
+    losses = np.zeros((1, num_classes))
 
-    #TODO: create label set for training switch classifier
+    networks_r = networks[1:4]
 
-    #TODO: get label for every sample
-    for i, (X, Y) in enumerate(train_dataset):
-        #for i in test_fn 
-            #y_prediction = test_fn(x, y) -- call model.fit()
-            #calculate loss as absolute difference
-        #y_pc = argmin of losses
-        #append to eq_data
+    # get label for every sample
+    for i, example in enumerate(train_data):
+        image = example[0]
+        density = example[1]
+        im = image.reshape((1, image.shape[0], image.shape[1], 1))
+        dens = density.reshape((1, density.shape[0], density.shape[1], 1))
+        
+        for j, model in enumerate(networks_r):
+            y_pred = model.predict(im)
+            losses[0,j] = np.abs(np.sum(y_pred) - np.sum(density))
+        y_pc = np.argmin(losses, axis=1)
+        # label for equalized dataset. 
+        eq_data[y_pc[0]].append((image, y_pc))
+        train_new.append((image, y_pc))
 
-    #TODO: equalize number of samples across classes 
+    # for i, ds in enumerate(eq_data):
+    #     samples = []
+    #     while len(samples) < 3:
+    #         samples += random.sample(ds, min(len(eq_data) - len(samples), len(ds)))
+    #         print(len(samples))
+    #     random.shuffle(samples)
+    #     train_data += samples
 
-    #TODO: train switch classifer
-        num_epochs = 1
-        for epoch in range(num_epochs):
-            avg_pc_loss = 0.0
-            #shuffle train data
-            for i, (X, Y) in enumerate(train_dataset):
-                pc_loss = train_funcs[0](X, Y, lr)
-                avg_pc_loss += pc_loss
-                # if i % 500 == 0: calculate average
-            print(avg_pc_loss)
+    num_epochs = 1
+    for epoch in range(num_epochs):
+        avg_pc_loss = 0.0
+        for example in enumerate(train_new):
+            image = example[1][0]
+            label = example[1][1]
+
+            image_rgb = color.gray2rgb(image)
+            im_rgb = image_rgb.reshape((1, image.shape[0], image.shape[1], 3))
+            x = tf.constant(im_rgb, dtype='float32')
+            
+            # with tf.GradientTape() as tape:
+            #     tape.watch(networks[0].trainable_weights)
+            pc_loss, acc = networks[0].evaluate(x, label, verbose=2)
+            # pc_loss = networks[0].loss_fn(networks[0].call(x), label)
+            # print("arrived!!")    
+                # grads = tape.gradient(pc_loss, networks[0].trainable_weights)
+                # networks[0].optimizer.apply_gradients(zip(grads, networks[0].trainable_weights))
+
+            avg_pc_loss += pc_loss
+        avg_pc_loss /= (i + 1)
+        print('done; avg_pc_Loss: %.12f' % (avg_pc_loss))
+
 
 def train_switched_differential(train_data, test_data, networks):
 
@@ -92,7 +124,7 @@ def coupled_train(train_data, test_data, networks):
         loss=networks[0].loss_fn,
         metrics=["sparse_categorical_accuracy"])
 
-    for i in range(1,3):
+    for i in range(1,4):
         networks[i].compile(
             optimizer= tf.keras.optimizers.SGD(learning_rate = 0.0005, momentum = 0.9),
             loss=networks[i].loss_fn
