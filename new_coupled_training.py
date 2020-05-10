@@ -17,7 +17,7 @@ import hyperparameters as hp
 from skimage import color
 
 def train_switch(train_data, test_data, networks):
-    
+
     # create label set for training switch classifier
     num_classes = len(networks) - 1
     eq_data = [[] for _ in range(num_classes)]
@@ -55,6 +55,7 @@ def train_switch(train_data, test_data, networks):
         for example in enumerate(train_new):
             image = example[1][0]
             label = example[1][1]
+            print(label)
 
             image_rgb = color.gray2rgb(image)
             im_rgb = image_rgb.reshape((1, image.shape[0], image.shape[1], 3))
@@ -72,6 +73,9 @@ def train_switch(train_data, test_data, networks):
         avg_pc_loss /= (i + 1)
         print('done; avg_pc_Loss: %.12f' % (avg_pc_loss))
 
+
+
+    #     print(avg_pc_loss)
 
 def train_switched_differential(train_data, test_data, networks):
 
@@ -133,13 +137,13 @@ def coupled_train(train_data, test_data, networks):
     min_mae = np.zeros(num_epochs)
     for epoch in range(num_epochs):
         train_switch(train_data, test_data, networks)
+        print("REACHED THIS POINT IN CODE")
+        break
         train_switched_differential(train_data, test_data, networks)
 
         min_mae[epoch] = calc_min_mae(test_data, networks)
         print(min_mae)
     
-
-
     for i, network in enumerate(networks):
         network.save_weights('./coupled_checkpoints/r'+str((i+1))+'model.h5')
 
@@ -156,7 +160,6 @@ def calc_min_mae(test_data, networks):
     patchct = 0
     num_images = 0
 
-    switch_stat = np.zeros(3)
     pc_switch_stat = np.zeros(3)
     calc_switch_stat = np.zeros(3)
     pc_switch_error = 0.0
@@ -164,15 +167,8 @@ def calc_min_mae(test_data, networks):
     for i, (X, Y) in enumerate(test_data):
         image = X
         density = Y
-        img_rgb = color.gray2rgb(image)
-        dens_rgb = color.gray2rgb(density) 
-
         reshaped_image = image.reshape((1, image.shape[0], image.shape[1], 1))
         reshaped_density = density.reshape((1, density.shape[0], density.shape[1], 1))
-
-        reshaped_rgb = img_rgb.reshape((1, img_rgb.shape[0], img_rgb.shape[1], 3))
-        reshaped_dens_rgb = dens_rgb.reshape((1, dens_rgb.shape[0], dens_rgb.shape[1], 3))
-
         x = tf.constant(reshaped_image, dtype='float32')
         networks_noswitch = networks[1:]
         for j, network in enumerate(networks_noswitch):
@@ -193,20 +189,6 @@ def calc_min_mae(test_data, networks):
 
         #TODO: add switch stuff here
 
-        switch_stat[y_pc] += 1
-        x_rgb = tf.constant(reshaped_rgb, dtype='float32')
-        y_pc_pred = networks[0].call(x_rgb)
-        pc_loss = np.array(y_pc_pred)
-        y_pc_pred = np.argmax(y_pc_pred, axis = 1)[0]
-        pc_loss = pc_loss[0][y_pc_pred]
-        pc_switch_stat[y_pc_pred] += 1
-        if y_pc_pred is not y_pc:
-            pc_switch_error += 1.0
-
-        total_losses[0] += pc_loss
-        patch_counts_total[0, 0] += patch_counts_sub[y_pc_pred, 0]
-        patch_counts_total[0, 1] += patch_counts_sub[y_pc_pred, 1]
-
         total_losses[1: -1] += loss
         total_counts[1: -1] += counts
         patchct+= 1
@@ -221,9 +203,9 @@ def calc_min_mae(test_data, networks):
     # print(num_images)
     total_losses /= len(test_data)
     total_counts /= len(test_data)
-    switch_stat /= len(test_data)
-    pc_switch_stat /= len(test_data)
-    pc_switch_error /= len(test_data)
+    #switch_stat /= len(test_data)
+    #pc_switch_stat /= i
+    #pc_switch_error /= i
     mae /= num_images
 
     # print(mae)
