@@ -132,7 +132,7 @@ def coupled_train(train_data, test_data, networks):
 
     min_mae = np.zeros(num_epochs)
     for epoch in range(num_epochs):
-        # train_switch()
+        train_switch(train_data, test_data, networks)
         train_switched_differential(train_data, test_data, networks)
 
         min_mae[epoch] = calc_min_mae(test_data, networks)
