@@ -185,8 +185,8 @@ def prepare_dataset(images, densities, grayscale=True):
         den = density.reshape((density.shape[0], density.shape[1], 1))
         data.append((im, den))
 
-    print(data[0][0])
-    print(data[0][0].shape)
+    # print(data[0][0])
+    # print(data[0][0].shape)
     return data
 
 def main():

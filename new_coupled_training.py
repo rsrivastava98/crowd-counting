@@ -124,6 +124,7 @@ def calc_min_mae(test_data, networks):
     patchct = 0
     num_images = 0
 
+    switch_stat = np.zeros(3)
     pc_switch_stat = np.zeros(3)
     calc_switch_stat = np.zeros(3)
     pc_switch_error = 0.0
@@ -131,8 +132,15 @@ def calc_min_mae(test_data, networks):
     for i, (X, Y) in enumerate(test_data):
         image = X
         density = Y
+        img_rgb = color.gray2rgb(image)
+        dens_rgb = color.gray2rgb(density) 
+
         reshaped_image = image.reshape((1, image.shape[0], image.shape[1], 1))
         reshaped_density = density.reshape((1, density.shape[0], density.shape[1], 1))
+
+        reshaped_rgb = img_rgb.reshape((1, img_rgb.shape[0], img_rgb.shape[1], 3))
+        reshaped_dens_rgb = dens_rgb.reshape((1, dens_rgb.shape[0], dens_rgb.shape[1], 3))
+
         x = tf.constant(reshaped_image, dtype='float32')
         networks_noswitch = networks[1:]
         for j, network in enumerate(networks_noswitch):
@@ -153,6 +161,20 @@ def calc_min_mae(test_data, networks):
 
         #TODO: add switch stuff here
 
+        switch_stat[y_pc] += 1
+        x_rgb = tf.constant(reshaped_rgb, dtype='float32')
+        y_pc_pred = networks[0].call(x_rgb)
+        pc_loss = np.array(y_pc_pred)
+        y_pc_pred = np.argmax(y_pc_pred, axis = 1)[0]
+        pc_loss = pc_loss[0][y_pc_pred]
+        pc_switch_stat[y_pc_pred] += 1
+        if y_pc_pred is not y_pc:
+            pc_switch_error += 1.0
+
+        total_losses[0] += pc_loss
+        patch_counts_total[0, 0] += patch_counts_sub[y_pc_pred, 0]
+        patch_counts_total[0, 1] += patch_counts_sub[y_pc_pred, 1]
+
         total_losses[1: -1] += loss
         total_counts[1: -1] += counts
         patchct+= 1
@@ -167,9 +189,9 @@ def calc_min_mae(test_data, networks):
     # print(num_images)
     total_losses /= len(test_data)
     total_counts /= len(test_data)
-    #switch_stat /= len(test_data)
-    #pc_switch_stat /= i
-    #pc_switch_error /= i
+    switch_stat /= len(test_data)
+    pc_switch_stat /= len(test_data)
+    pc_switch_error /= len(test_data)
     mae /= num_images
 
     # print(mae)
@@ -184,14 +206,14 @@ def train():
     # load and set up data sets
     train_images = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/train_data/images")
     train_densities = preprocessing.density_patches("ShanghaiTech_PartA_Train/part_A/train_data/ground-truth-h5")
-    # train_images = train_images[:20] #use when debugging
-    # train_densities = train_densities[:20]
+    train_images = train_images[:20] #use when debugging
+    train_densities = train_densities[:20]
     train_dataset = new_pretraining.prepare_dataset(train_images, train_densities)
 
     test_images = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/test_data/images")
     test_densities = preprocessing.density_patches("ShanghaiTech_PartA_Test/part_A/test_data/ground-truth-h5")
-    # test_images = test_images[:20]
-    # test_densities = test_densities[:20]
+    test_images = test_images[:20]
+    test_densities = test_densities[:20]
 
     test_dataset = new_pretraining.prepare_dataset(test_images, test_densities)
 
