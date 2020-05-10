@@ -14,6 +14,7 @@ import new_pretraining
 import random
 import vgg_model
 import hyperparameters as hp
+from skimage import color
 
 def train_switch():
 
@@ -43,7 +44,7 @@ def train_switch():
 def train_switched_differential(train_data, test_data, networks):
 
     #for epoch
-    num_epochs = 30
+    num_epochs = 1
     num_nets = 3
     for epoch in range(num_epochs):
         switch_stat = np.zeros(num_nets)
@@ -53,11 +54,17 @@ def train_switched_differential(train_data, test_data, networks):
             image = example[0]
             density = example[1]
 
+            image_rgb = color.gray2rgb(image)
+            density_rgb = color.gray2rgb(density)
+
             im = image.reshape((1, image.shape[0], image.shape[1], 1))
             dens = density.reshape((1, density.shape[0], density.shape[1], 1))
 
+            im_rgb = image_rgb.reshape((1, image.shape[0], image.shape[1], 3))
+            dens_rgb = density_rgb.reshape((1, density.shape[0], density.shape[1], 3))
+
             # run switch classifier to get label
-            label = networks[0].predict(im) #this line gets the label from switch
+            label = networks[0].predict(im_rgb) #this line gets the label from switch
             y_pc = np.argmax(label, axis = 1)[0] #this line stores which regressor is chosen
 
             #backpropagate regressor suggested by classifier
@@ -177,17 +184,20 @@ def train():
     # load and set up data sets
     train_images = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/train_data/images")
     train_densities = preprocessing.density_patches("ShanghaiTech_PartA_Train/part_A/train_data/ground-truth-h5")
-
+    # train_images = train_images[:20] #use when debugging
+    # train_densities = train_densities[:20]
     train_dataset = new_pretraining.prepare_dataset(train_images, train_densities)
 
     test_images = preprocessing.image_patches("data/shanghaitech_h5_empty/ShanghaiTech/part_A/test_data/images")
     test_densities = preprocessing.density_patches("ShanghaiTech_PartA_Test/part_A/test_data/ground-truth-h5")
+    # test_images = test_images[:20]
+    # test_densities = test_densities[:20]
 
     test_dataset = new_pretraining.prepare_dataset(test_images, test_densities)
+
     print("loaded data")
 
     # get weights from differential
-    #TODO: need to fix vgg weights
     checkpoint_paths = ["./vgg16_imagenet.h5",
                         "./r1_checkpoints/weights.h5",
                         "./r2_checkpoints/weights.h5",
@@ -205,7 +215,7 @@ def train():
 
     # switch_model = VGG16(weights=None, include_top=False, input_shape=(None, None, 1), classes=3)
     switch_model = vgg_model.VGGModel()
-    switch_model(tf.keras.Input(shape=(None, None, 1)))
+    switch_model(tf.keras.Input(shape=(None, None, 3)))
 
     networks = [switch_model, model1, model2, model3]
 
